@@ -7,7 +7,7 @@
 #include <util/crc16.h>
 #include <FastCRC.h>
 
-#define Ser Serial1
+#define Ser Serial
 #define BUFSIZE 16384
 
 
