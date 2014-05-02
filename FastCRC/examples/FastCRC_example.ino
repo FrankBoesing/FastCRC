@@ -7,7 +7,7 @@
 #include <util/crc16.h>
 #include <FastCRC.h>
 
-#define Ser Serial
+#define Ser Serial1
 #define BUFSIZE 16384
 
 
@@ -55,92 +55,100 @@ uint32_t crc;
 
 
   Ser.begin(115200);
-  while (!Ser) {};
-  Ser.println("\r\n\r\nCRC Benchmark\r\n");
+ // while (!Ser) {};
+  Ser.printf("\r\n\r\nCRC Benchmark\r\n");
+  Ser.printf("Length: %u Bytes\r\n\r\n", sizeof(buf));
 
   //Fill array with data
   for (int i=0; i<BUFSIZE; i++) {
     buf[i] = (i+1) & 0xff;
   }
-  
-  Ser.println("\r\nMaxim (iButton) 8-Bit CRC:");
+
+  Ser.printf("\r\nMaxim (iButton) 8-Bit CRC:\r\n");
   Ser.flush();
 
   time = micros();
   crc = CRC8.maxim(buf, BUFSIZE);
   time = micros() - time;
-  Ser.print("Hard: Value 0x");Ser.print(crc,HEX); Ser.print(" in "); Ser.print(time); Ser.println("us");
+  Ser.printf("FastCRC : Value 0x%X in %uus\r\n", crc, time);
   Ser.flush();
 
 
   time = micros();
   crc = softcrcIbutton(0, buf, BUFSIZE);
   time = micros() - time;
-  Ser.print("Soft: Value 0x");Ser.print(crc,HEX); Ser.print(" in "); Ser.print(time); Ser.println("us");
+  Ser.printf("Software: Value 0x%X in %uus\r\n", crc, time);
   Ser.flush();
-  
-  
-  
-  Ser.println("\r\nMODBUS 16-Bit CRC:");  
-  Ser.flush(); 
-  
+
+
+
+  Ser.println("\r\nMODBUS 16-Bit CRC:");
+  Ser.flush();
+
   time = micros();
   crc = CRC16.modbus(buf, BUFSIZE);
-  time = micros() - time;  
-  Ser.print("Hard: Value 0x");Ser.print(crc,HEX); Ser.print(" in "); Ser.print(time); Ser.println("us");
+  time = micros() - time;
+  Ser.printf("FastCRC: Value 0x%X in %uus\r\n", crc, time);
   Ser.flush();
 
   time = micros();
   crc = softcrc(0xffff, buf, BUFSIZE);
   time = micros() - time;
-  Ser.print("Soft: Value 0x");Ser.print(crc,HEX); Ser.print(" in "); Ser.print(time); Ser.println("us");
+  Ser.printf("Software: Value 0x%X in %uus\r\n", crc, time);
 
 
-  
-  
+
+
   Ser.println("\r\nXMODEM 16-Bit CRC:");
   Ser.flush();
 
-  time = micros();  
+  time = micros();
   crc = CRC16.xmodem(buf, BUFSIZE);
-  time = micros() - time;  
-  
-  Ser.print("Hard: Value 0x");Ser.print(crc,HEX); Ser.print(" in "); Ser.print(time); Ser.println("us");
+  time = micros() - time;
+  Ser.printf("FastCRC: Value 0x%X in %uus\r\n", crc, time);
   Ser.flush();
 
   time = micros();
   crc = softcrcXMODEM(0, buf, BUFSIZE);
   time = micros() - time;
-  Ser.print("Soft: Value 0x");Ser.print(crc,HEX); Ser.print(" in "); Ser.print(time); Ser.println("us");  
+  Ser.printf("Software: Value 0x%X in %uus\r\n", crc, time);
   Ser.flush();
 
-  
-  Ser.println("\r\nCCIT \"false\"  16-Bit CRC:");
+
+  Ser.println("\r\nMCRF4XX 16-Bit CRC:");
   Ser.flush();
 
   time = micros();
-  crc = CRC16.ccit(buf,BUFSIZE);
+  crc = CRC16.mcrf4xx(buf,BUFSIZE);
   time = micros() - time;
-  Ser.print("Hard: Value 0x");Ser.print(crc,HEX); Ser.print(" in "); Ser.print(time); Ser.println("us");    
+  Ser.printf("FastCRC: Value 0x%X in %uus\r\n", crc, time);
   Ser.flush();
 
 
   time = micros();
   crc = softcrcCCIT(0xffff, buf, BUFSIZE);
   time = micros() - time;
-  Ser.print("Soft: Value 0x");Ser.print(crc,HEX); Ser.print(" in "); Ser.print(time); Ser.println("us");
+  Ser.printf("Software: Value 0x%X in %uus\r\n", crc, time);
   Ser.flush();
 
-  
+
   Ser.println("\r\nKERMIT 16-Bit CRC:");
   Ser.flush();
 
-  time = micros();  
+  time = micros();
   crc = CRC16.kermit(buf, BUFSIZE);
-  time = micros() - time;  
-  
-  Ser.print("Hard: Value 0x");Ser.print(crc,HEX); Ser.print(" in "); Ser.print(time); Ser.println("us");
-  Ser.flush();  
+  time = micros() - time;
+  Ser.printf("FastCRC: Value 0x%X in %uus\r\n", crc, time);
+
+
+  Ser.println("\r\nEthernet 32-Bit CRC:");
+  Ser.flush();
+
+  time = micros();
+  crc = CRC32.crc32(buf, BUFSIZE);
+  time = micros() - time;
+  Ser.printf("FastCRC: Value 0x%X in %uus\r\n", crc, time);
+
 }
 
 void loop() {
