@@ -20,7 +20,7 @@ kermit	KEYWORD2
 mcrf4xx	KEYWORD2
 modbus	KEYWORD2
 xmodem	KEYWORD2
-x25	KEYWORD2
+x25		KEYWORD2
 update	KEYWORD2
 generic	KEYWORD2
 crc32	KEYWORD2
@@ -29,4 +29,10 @@ cksum	KEYWORD2
 #######################################
 # Constants (LITERAL1)
 #######################################
+
+CRC_FLAG_NOREFLECT		LITERAL1
+CRC_FLAG_REFLECT		LITERAL1
+CRC_FLAG_XOR			LITERAL1
+CRC_FLAG_NOREFLECT_8	LITERAL1
+CRC_FLAG_REFLECT_SWAP	LITERAL1
 
