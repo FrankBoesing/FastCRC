@@ -2,9 +2,10 @@ FastCRC
 =======
 
 Fast CRC Arduino library for ARM Cortex M4 (e.g. Teensy 3) - uses the on-chip hardware
+
 Up to 30 times faster than crc16.h (_arv_libc)
 
-List of supported CRCs:
+List of supported CRC calculations:
 -
 8 BIT:
 
