@@ -99,7 +99,6 @@ uint8_t FastCRC8::update(const uint8_t *data, const uint16_t datalen)
 {
   uint32_t *d32 = (uint32_t *) data;
   uint16_t *d16 = (uint16_t *) data;
-  uint8_t *d8   = (uint8_t *) data;
 
   int32_t lengthWords = datalen>>2;
   int32_t i=0;
@@ -109,7 +108,7 @@ uint8_t FastCRC8::update(const uint8_t *data, const uint16_t datalen)
   i = (i<<2);
 
   if (datalen-i>1) {CRC_CRC16 = d16[i>>1]; i+=2;}
-  if (datalen-i>0) {CRC_CRC8H1 = d8[i];}
+  if (datalen-i>0) {CRC_CRC8H1 = data[i];}
 
   if (CRC_CTRL_BIT(CRC_CTRL_TOTR1))
     return CRC_CRC8;
@@ -130,7 +129,7 @@ uint8_t FastCRC8::generic(const uint8_t polynom, const uint8_t seed, const uint3
 
   CRC_CTRL  = flags | (1<<CRC_CTRL_TCRC) | (1<<CRC_CTRL_WAS);                      // 32Bit Mode, Prepare to write seed(25)
   CRC_GPOLY = ((uint32_t)polynom)<<24;                                             // Set polynom
-  CRC_CRC   = ((uint32_t)seed<<24)|((uint32_t)seed<<16)|((uint32_t)seed<<8)|seed;  // Write seed
+  CRC_CRC   = ((uint32_t)seed<<24);                                                // Write seed
   CRC_CTRL_BIT(CRC_CTRL_WAS) = 0;                                                  // Clear WAS Bit - prepare to write data
 
   return update(data, datalen);
@@ -228,7 +227,6 @@ uint16_t FastCRC16::update(const uint8_t *data, const uint16_t datalen)
 {
   uint32_t *d32 = (uint32_t *) data;
   uint16_t *d16 = (uint16_t *) data;
-  uint8_t *d8   = (uint8_t *) data;
 
   int32_t lengthWords = datalen>>2;
   int32_t i=0;
@@ -238,7 +236,7 @@ uint16_t FastCRC16::update(const uint8_t *data, const uint16_t datalen)
   i = (i<<2);
 
   if (datalen-i>1) {CRC_CRC16 = d16[i>>1]; i+=2;}
-  if (datalen-i>0) {CRC_CRC8H1 = d8[i];}
+  if (datalen-i>0) {CRC_CRC8H1 = data[i];}
 
   if (CRC_CTRL_BIT(CRC_CTRL_TOTR1))
     return CRC_CRC16;
@@ -257,9 +255,9 @@ uint16_t FastCRC16::update(const uint8_t *data, const uint16_t datalen)
 uint16_t FastCRC16::generic(const uint16_t polynom, const uint16_t seed, const uint32_t flags, const uint8_t *data, const uint16_t datalen)
 {
   
-  CRC_CTRL  = flags | (1<<CRC_CTRL_TCRC) |(1<<CRC_CTRL_WAS); // 32-Bit Mode, prepare to write seed(25)
+  CRC_CTRL  = flags | (1<<CRC_CTRL_TCRC) | (1<<CRC_CTRL_WAS);// 32-Bit Mode, prepare to write seed(25)
   CRC_GPOLY = ((uint32_t)polynom)<<16;                       // set polynom
-  CRC_CRC   = ((uint32_t)seed<<24)|((uint32_t)seed<<16);     // this is the seed
+  CRC_CRC   = ((uint32_t)seed<<16);                          // this is the seed
   CRC_CTRL_BIT(CRC_CTRL_WAS) = 0;                            // Clear WAS Bit - prepare to write data
 
   return update(data, datalen);
