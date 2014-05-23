@@ -97,18 +97,22 @@ uint8_t FastCRC8::maxim(const uint8_t *data, const uint16_t datalen)
  */
 uint8_t FastCRC8::update(const uint8_t *data, const uint16_t datalen)
 {
-  uint32_t *d32 = (uint32_t *) data;
-  uint16_t *d16 = (uint16_t *) data;
 
-  int32_t lengthWords = datalen>>2;
-  int32_t i=0;
-
-  while ( i < lengthWords ) CRC_CRC = d32[i++];
-
-  i = (i<<2);
-
-  if (datalen-i>1) {CRC_CRC16 = d16[i>>1]; i+=2;}
-  if (datalen-i>0) {CRC_CRC8H1 = data[i];}
+  const uint8_t *src = data;
+  const uint8_t *target = src + datalen;
+  
+  while (((uintptr_t)src & 0x03) != 0) {
+    CRC_CRC8H1 = *src++; //Write 8 BIT
+  }
+  
+  while (src <= target-4) {
+    CRC_CRC = *( uint32_t  *)src; //Write 32 BIT
+    src += 4;
+  }
+  
+  while (src < target) { 
+    CRC_CRC8H1 = *src++; //Write 8 Bit
+  }
 
   if (CRC_CTRL_BIT(CRC_CTRL_TOTR1))
     return CRC_CRC8;
@@ -225,18 +229,21 @@ uint16_t FastCRC16::x25(const uint8_t *data, const uint16_t datalen)
  */
 uint16_t FastCRC16::update(const uint8_t *data, const uint16_t datalen)
 {
-  uint32_t *d32 = (uint32_t *) data;
-  uint16_t *d16 = (uint16_t *) data;
-
-  int32_t lengthWords = datalen>>2;
-  int32_t i=0;
-
-  while ( i < lengthWords ) CRC_CRC = d32[i++];
-
-  i = (i<<2);
-
-  if (datalen-i>1) {CRC_CRC16 = d16[i>>1]; i+=2;}
-  if (datalen-i>0) {CRC_CRC8H1 = data[i];}
+  const uint8_t *src = data;
+  const uint8_t *target = src + datalen;
+  
+  while (((uintptr_t)src & 0x03) !=0)  {
+    CRC_CRC8H1 = *src++; //Write 8 BIT
+  }
+  
+  while (src <= target-4) {
+    CRC_CRC = *( uint32_t  *)src; //Write 32 BIT
+    src += 4;
+  }
+  
+  while (src < target) { 
+    CRC_CRC8H1 = *src++; //Write 8 Bit
+  }
 
   if (CRC_CTRL_BIT(CRC_CTRL_TOTR1))
     return CRC_CRC16;
@@ -305,22 +312,26 @@ uint32_t FastCRC32::cksum(const uint8_t *data, const uint16_t datalen)
  * @param datalen Length of Data
  * @return CRC value
  */
+//#pragma GCC diagnostic ignored "-Wpointer-arith"
 uint32_t FastCRC32::update(const uint8_t *data, const uint16_t datalen)
 {
-  uint32_t *d32 = (uint32_t *) data;
-  uint16_t *d16 = (uint16_t *) data;
-  uint8_t *d8   = (uint8_t *) data;
-
-  int32_t lengthWords = datalen>>2;
-  int32_t i=0;
-
-  while ( i < lengthWords ) CRC_CRC = d32[i++];
-
-  i = (i<<2);
-
-  if (datalen-i>1) {CRC_CRC16 = d16[i>>1]; i+=2;}
-  if (datalen-i>0) {CRC_CRC8H1 = d8[i];}
-
+  
+  const uint8_t *src = data;
+  const uint8_t *target = src + datalen;
+  
+  while (((uintptr_t)src & 0x03) != 0 ) {
+    CRC_CRC8H1 = *src++; //Write 8 BIT
+  }
+  
+  while (src <= target-4) {
+    CRC_CRC = *( uint32_t  *)src; //Write 32 BIT
+    src += 4;
+  }
+  
+  while (src < target) { 
+    CRC_CRC8H1 = *src++; //Write 8 Bit
+  }
+  
   return CRC_CRC;
 }
 
