@@ -5,7 +5,7 @@ Fast CRC Arduino library
 Up to 30 times faster than crc16.h (_avr_libc)
 
  - uses the on-chip hardware for Teensy 3.0 / 3.1
- - uses fast tables for other chips
+ - uses fast table-algorithms for other chips
  
 List of supported CRC calculations:
 -
