@@ -80,7 +80,7 @@ uint8_t FastCRC8::smbus(const uint8_t *data, const uint16_t datalen)
 /** MAXIM 8-Bit CRC
  * equivalent to _crc_ibutton_update() in crc16.h from avr_libc
  * @param data Pointer to Data
- * @param datalen Length of Data 
+ * @param datalen Length of Data
  * @return CRC value
  */
 uint8_t FastCRC8::maxim(const uint8_t *data, const uint16_t datalen)
@@ -100,17 +100,17 @@ uint8_t FastCRC8::update(const uint8_t *data, const uint16_t datalen)
 
   const uint8_t *src = data;
   const uint8_t *target = src + datalen;
-  
+
   while (((uintptr_t)src & 0x03) != 0) {
     CRC_CRC8H1 = *src++; //Write 8 BIT
   }
-  
+
   while (src <= target-4) {
     CRC_CRC = *( uint32_t  *)src; //Write 32 BIT
     src += 4;
   }
-  
-  while (src < target) { 
+
+  while (src < target) {
     CRC_CRC8H1 = *src++; //Write 8 Bit
   }
 
@@ -231,17 +231,17 @@ uint16_t FastCRC16::update(const uint8_t *data, const uint16_t datalen)
 {
   const uint8_t *src = data;
   const uint8_t *target = src + datalen;
-  
+
   while (((uintptr_t)src & 0x03) !=0)  {
     CRC_CRC8H1 = *src++; //Write 8 BIT
   }
-  
+
   while (src <= target-4) {
     CRC_CRC = *( uint32_t  *)src; //Write 32 BIT
     src += 4;
   }
-  
-  while (src < target) { 
+
+  while (src < target) {
     CRC_CRC8H1 = *src++; //Write 8 Bit
   }
 
@@ -261,7 +261,7 @@ uint16_t FastCRC16::update(const uint8_t *data, const uint16_t datalen)
  */
 uint16_t FastCRC16::generic(const uint16_t polynom, const uint16_t seed, const uint32_t flags, const uint8_t *data, const uint16_t datalen)
 {
-  
+
   CRC_CTRL  = flags | (1<<CRC_CTRL_TCRC) | (1<<CRC_CTRL_WAS);// 32-Bit Mode, prepare to write seed(25)
   CRC_GPOLY = ((uint32_t)polynom)<<16;                       // set polynom
   CRC_CRC   = ((uint32_t)seed<<16);                          // this is the seed
@@ -293,7 +293,7 @@ uint32_t FastCRC32::crc32(const uint8_t *data, const uint16_t datalen)
   // poly=0x04c11db7 init=0xffffffff refin=true refout=true xorout=0xffffffff check=0xcbf43926
   return generic(0x04C11DB7L, 0XFFFFFFFFL, CRC_FLAG_REFLECT | CRC_FLAG_XOR, data, datalen);
 }
- 
+
 /** CKSUM
  * Alias CRC-32/POSIX
  * @param data Pointer to Data
@@ -315,23 +315,23 @@ uint32_t FastCRC32::cksum(const uint8_t *data, const uint16_t datalen)
 //#pragma GCC diagnostic ignored "-Wpointer-arith"
 uint32_t FastCRC32::update(const uint8_t *data, const uint16_t datalen)
 {
-  
+
   const uint8_t *src = data;
   const uint8_t *target = src + datalen;
-  
+
   while (((uintptr_t)src & 0x03) != 0 ) {
     CRC_CRC8H1 = *src++; //Write 8 BIT
   }
-  
+
   while (src <= target-4) {
     CRC_CRC = *( uint32_t  *)src; //Write 32 BIT
     src += 4;
   }
-  
-  while (src < target) { 
+
+  while (src < target) {
     CRC_CRC8H1 = *src++; //Write 8 Bit
   }
-  
+
   return CRC_CRC;
 }
 
@@ -345,7 +345,7 @@ uint32_t FastCRC32::update(const uint8_t *data, const uint16_t datalen)
  */
 uint32_t FastCRC32::generic(const uint32_t polynom, const uint32_t seed, const uint32_t flags, const uint8_t *data, const uint16_t datalen)
 {
- 
+
   CRC_CTRL  = flags | (1<<CRC_CTRL_TCRC) | (1<<CRC_CTRL_WAS); // 32Bit Mode, prepare to write seed(25)
   CRC_GPOLY = polynom;                                        // Set polynom
   CRC_CRC   = seed;                                           // This is the seed
