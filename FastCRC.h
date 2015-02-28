@@ -1,5 +1,5 @@
 /* FastCRC library code is placed under the MIT license
- * Copyright (c) 2014 Frank Bösing
+ * Copyright (c) 2014,2015 Frank Bösing
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -23,42 +23,61 @@
  */
 
 
-//
+// Teensy 3.0, Teensy 3.1:
 // See K20P64M72SF1RM.pdf (Kinetis), Pages 638 - 641 for documentation of CRC Device
 // See KINETIS_4N30D.pdf for Errata (Errata ID 2776)
 //
-// So, ALL calculations are done as 32 bit.
+// So, ALL HW-calculations are done as 32 bit.
+//
+//
 //
 // Thanks to:
-// Catalogue of parametrised CRC algorithms, CRC RevEng
+// - Catalogue of parametrised CRC algorithms, CRC RevEng
 // http://reveng.sourceforge.net/crc-catalogue/
 //
+// - Danjel McGougan (CRC-Table-Generator)
+//
 
-#if !defined(FastCRC_h) && (defined(__MK20DX128__) || defined(__MK20DX256__))
+
+// Set this to 0 for smaller 32BIT-CRC-Tables:
+#define CRC_BIGTABLES 1
+
+
+#if !defined(FastCRC_h)
 #define FastCRC_h
-
 #include "inttypes.h"
 
-// ================= DEFINES ===================
 
+// ================= DEFINES ===================
+#if defined(__MK20DX128__) || defined(__MK20DX256__)
+#define CRC_SW 0
 #define CRC_FLAG_NOREFLECT         (((1<<31) | (1<<30)) | ((0<<29) | (0<<28))) //refin=false refout=false
 #define CRC_FLAG_REFLECT           (((1<<31) | (0<<30)) | ((1<<29) | (0<<28))) //Reflect in- and outgoing bytes (refin=true refout=true)
 #define CRC_FLAG_XOR               (1<<26)                                     //Perform XOR on result
-#define CRC_FLAG_NOREFLECT_8       (0)                                         //For 8-Bit CRC
 #define CRC_FLAG_REFLECT_SWAP      (((1<<31) | (0<<30)) | ((0<<29) | (1<<28))) //For 16-Bit CRC (byteswap)
-
-
+#else
+#define CRC_SW 1
+#endif
 // ================= 8-BIT CRC ===================
 
 class FastCRC8
 {
 public:
   FastCRC8();
-  uint8_t smbus(const uint8_t *data, const uint16_t datalen);      // Alias CRC-8
-  uint8_t maxim(const uint8_t *data, const uint16_t datalen);      // Equivalent to _crc_ibutton_update() in crc16.h from avr_libc
-
-  uint8_t update(const uint8_t *data, const uint16_t datalen);     // Call for subsequent calculations with previous seed
-  uint8_t generic(const uint8_t polyom, const uint8_t seed, const uint32_t flags, const uint8_t *data, const uint16_t datalen);
+  uint8_t smbus(const uint8_t *data, const uint16_t datalen);		// Alias CRC-8
+  uint8_t maxim(const uint8_t *data, const uint16_t datalen);		// Equivalent to _crc_ibutton_update() in crc16.h from avr_libc
+  
+  uint8_t smbus_upd(const uint8_t *data, uint16_t datalen);			// Call for subsequent calculations with previous seed.
+  uint8_t maxim_upd(const uint8_t *data, uint16_t datalen);			// Call for subsequent calculations with previous seed.
+#if !CRC_SW
+  uint8_t generic(const uint8_t polyom, const uint8_t seed, const uint32_t flags, const uint8_t *data, const uint16_t datalen); //Not available in non-hw-variant (not T3.x)
+#endif
+private:
+#if CRC_SW
+  uint8_t seed;
+#else
+  uint8_t update(const uint8_t *data, const uint16_t datalen);
+#endif
 };
 
 // ================= 16-BIT CRC ===================
@@ -73,9 +92,22 @@ public:
   uint16_t modbus(const uint8_t *data, const uint16_t datalen);     // Equivalent to _crc_16_update() in crc16.h from avr_libc
   uint16_t xmodem(const uint8_t *data, const uint16_t datalen);     // Alias ZMODEM, CRC-16/ACORN
   uint16_t x25(const uint8_t *data, const uint16_t datalen);        // Alias CRC-16/IBM-SDLC, CRC-16/ISO-HDLC, CRC-B
-
-  uint16_t update(const uint8_t *data, const uint16_t datalen);     // Call for subsequent calculations with previous seed
-  uint16_t generic(const uint16_t polyom, const uint16_t seed, const uint32_t flags, const uint8_t *data, const uint16_t datalen);
+  
+  uint16_t ccitt_upd(const uint8_t *data, uint16_t len);			// Call for subsequent calculations with previous seed
+  uint16_t mcrf4xx_upd(const uint8_t *data, uint16_t len);			// Call for subsequent calculations with previous seed
+  uint16_t kermit_upd(const uint8_t *data, uint16_t len);			// Call for subsequent calculations with previous seed
+  uint16_t modbus_upd(const uint8_t *data, uint16_t len);			// Call for subsequent calculations with previous seed
+  uint16_t xmodem_upd(const uint8_t *data, uint16_t len);			// Call for subsequent calculations with previous seed
+  uint16_t x25_upd(const uint8_t *data, uint16_t len);				// Call for subsequent calculations with previous seed
+#if !CRC_SW
+  uint16_t generic(const uint16_t polyom, const uint16_t seed, const uint32_t flags, const uint8_t *data, const uint16_t datalen); //Not available in non-hw-variant (not T3.x)
+#endif
+private:
+#if CRC_SW
+  uint16_t seed;
+#else
+  uint16_t update(const uint8_t *data, const uint16_t datalen);
+#endif
 };
 
 // ================= 32-BIT CRC ===================
@@ -84,11 +116,20 @@ class FastCRC32
 {
 public:
   FastCRC32();
-  uint32_t crc32(const uint8_t *data, const uint16_t datalen);     // Alias CRC-32/ADCCP, PKZIP, Ethernet, 802.3
-  uint32_t cksum(const uint8_t *data, const uint16_t datalen);     // Alias CRC-32/POSIX
+  uint32_t crc32(const uint8_t *data, const uint16_t datalen);		// Alias CRC-32/ADCCP, PKZIP, Ethernet, 802.3
+  uint32_t cksum(const uint8_t *data, const uint16_t datalen);		// Alias CRC-32/POSIX
 
-  uint32_t update(const uint8_t *data, const uint16_t datalen);    // Call for subsequent calculations with previous seed
-  uint32_t generic(const uint32_t polyom, const uint32_t seed, const uint32_t flags, const uint8_t *data, const uint16_t datalen);
+  uint32_t crc32_upd(const uint8_t *data, uint16_t len);			// Call for subsequent calculations with previous seed
+  uint32_t cksum_upd(const uint8_t *data, uint16_t len);			// Call for subsequent calculations with previous seed
+#if !CRC_SW
+  uint32_t generic(const uint32_t polyom, const uint32_t seed, const uint32_t flags, const uint8_t *data, const uint16_t datalen); //Not available in non-hw-variant (not T3.x)
+#endif
+private:
+#if CRC_SW
+  uint32_t seed;
+#else
+  uint32_t update(const uint8_t *data, const uint16_t datalen);
+#endif
 };
 
 #endif
