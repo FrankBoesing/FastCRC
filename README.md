@@ -16,6 +16,8 @@ SMBUS
  
 MAXIM
  (poly=0x31 init=0x00 refin=true refout=true xorout=0x00  check=0xa1)
+ 
+ 
 16 BIT:
 
 KERMIT (Alias CRC-16/CCITT, CRC-16/CCITT-TRUE, CRC-CCITT)
@@ -37,6 +39,7 @@ XMODEM (Alias ZMODEM, CRC-16/ACORN)
 X25 (Alias CRC-16/IBM-SDLC, CRC-16/ISO-HDLC, CRC-B)
  (poly=0x1021 init=0xffff refin=true refout=true xorout=0xffff check=0x906e)
 
+ 
 32 BIT:
 
 CRC32, CRC-32/ADCCP, PKZIP, ETHERNET, 802.3
