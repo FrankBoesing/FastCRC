@@ -42,22 +42,10 @@
 #if !defined(__MK20DX128__) && !defined(__MK20DX256__)
 
 #include "FastCRC.h"
+#include "FastCRC_cpu.h"
 #include "FastCRC_tables.h"
 
-//Reverse byte order (16 bit)
-static inline __attribute__((always_inline))
-unsigned int REV16( unsigned int value)
-{
-	asm ("rev16 %0, %1" : "=r" (value) : "r" (value) );
-	return(value);
-}
 
-static inline  __attribute__((always_inline))
-unsigned int REV32( unsigned int value)
-{
-	asm ("rev %0, %1" : "=r" (value) : "r" (value) );
-	return(value);
-}
 // ================= 8-BIT CRC ===================
 
 /** Constructor
