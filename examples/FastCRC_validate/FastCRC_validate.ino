@@ -27,7 +27,7 @@ uint32_t crc;
   Ser.printf("\r\n\r\nCRC Validation\r\n");
 
   crc = CRC8.smbus(buf, sizeof(buf));
-  Ser.printf("\r\nSMBUS: %s",( crc==0x4f ) ? "OK":"FALSE!!!!");
+  Ser.printf("\r\nSMBUS: %s",( crc==0xf4 ) ? "OK":"FALSE!!!!");
 
   crc = CRC8.maxim(buf, sizeof(buf));
   Ser.printf("\r\nMaxim: %s",(crc==0xa1) ? "OK":"FALSE!!!!");
