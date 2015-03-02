@@ -100,8 +100,6 @@ uint8_t FastCRC8::maxim(const uint8_t *data, const uint16_t datalen)
 }
 
 // ================= 16-BIT CRC ===================
-#pragma GCC diagnostic push
-#pragma GCC diagnostic error "-Wstrict-aliasing"
 /** Constructor
  */
 FastCRC16::FastCRC16(){}
@@ -481,5 +479,4 @@ uint32_t FastCRC32::cksum(const uint8_t *data, const uint16_t datalen)
   return cksum_upd(data, datalen);
 }
 
-#pragma GCC diagnostic pop
 #endif // __MK20DX128__ || __MK20DX256__
