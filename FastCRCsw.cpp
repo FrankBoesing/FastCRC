@@ -62,7 +62,7 @@ uint8_t FastCRC8::smbus_upd(const uint8_t *data, uint16_t datalen)
 {
 	uint8_t crc = seed;
 	if (datalen) do {
-		crc = crc_table_smbus[crc ^ *data];
+		crc = pgm_read_byte(&crc_table_smbus[crc ^ *data]);
 		data++;
 	} while (--datalen);
 	seed = crc;
@@ -86,7 +86,7 @@ uint8_t FastCRC8::maxim_upd(const uint8_t *data, uint16_t datalen)
 {
 	uint8_t crc = seed;
 	if (datalen) do {
-		crc = crc_table_maxim[crc ^ *data];
+		crc = pgm_read_byte(&crc_table_maxim[crc ^ *data]);
 		data++;
 	} while (--datalen);
 	seed = crc;
@@ -100,16 +100,17 @@ uint8_t FastCRC8::maxim(const uint8_t *data, const uint16_t datalen)
 }
 
 // ================= 16-BIT CRC ===================
-
+#pragma GCC diagnostic push
+#pragma GCC diagnostic error "-Wstrict-aliasing"
 /** Constructor
  */
 FastCRC16::FastCRC16(){}
 
 #define crc_n4(crc, data, table) crc ^= data; \
-	crc = table[(crc & 0xff) + 0x300] ^		\
-	table[((crc >> 8) & 0xff) + 0x200] ^	\
-	table[((data >> 16) & 0xff) + 0x100] ^	\
-	table[data >> 24];
+	crc = pgm_read_word(&table[(crc & 0xff) + 0x300]) ^		\
+	pgm_read_word(&table[((crc >> 8) & 0xff) + 0x200]) ^	\
+	pgm_read_word(&table[((data >> 16) & 0xff) + 0x100]) ^	\
+	pgm_read_word(&table[data >> 24]);
 
 /** CCITT
  * Alias "false CCITT"
@@ -123,7 +124,7 @@ uint16_t FastCRC16::ccitt_upd(const uint8_t *data, uint16_t len)
 	uint16_t crc = seed;
 
 	while (((uintptr_t)data & 3) && len) {
-		crc = (crc >> 8) ^ crc_table_ccitt[(crc & 0xff) ^ *data++];
+		crc = (crc >> 8) ^ pgm_read_byte(&crc_table_ccitt[(crc & 0xff) ^ *data++]);
 		len--;
 	}
 
@@ -137,7 +138,7 @@ uint16_t FastCRC16::ccitt_upd(const uint8_t *data, uint16_t len)
 	}
 
 	while (len--) {
-		crc = (crc >> 8) ^ crc_table_ccitt[(crc & 0xff) ^ *data++];
+		crc = (crc >> 8) ^ pgm_read_word(&crc_table_ccitt[(crc & 0xff) ^ *data++]);
 	}
 
 	crc = REV16(crc);
@@ -367,11 +368,17 @@ uint16_t FastCRC16::x25(const uint8_t *data, const uint16_t datalen)
  */
 FastCRC32::FastCRC32(){}
 
-#define crcsm_n4(crc, data, table) crc ^= data; \
-	crc = (crc >> 8) ^ table[crc & 0xff]; \
-	crc = (crc >> 8) ^ table[crc & 0xff]; \
-	crc = (crc >> 8) ^ table[crc & 0xff]; \
-	crc = (crc >> 8) ^ table[crc & 0xff]; \
+#define crc_n4d(crc, data, table) crc ^= data; \
+	crc = pgm_read_dword(&table[(crc & 0xff) + 0x300]) ^	\
+	pgm_read_dword(&table[((crc >> 8) & 0xff) + 0x200]) ^	\
+	pgm_read_dword(&table[((data >> 16) & 0xff) + 0x100]) ^	\
+	pgm_read_dword(&table[data >> 24]);
+	
+#define crcsm_n4d(crc, data, table) crc ^= data; \
+	crc = (crc >> 8) ^ pgm_read_dword(&table[crc & 0xff]); \
+	crc = (crc >> 8) ^ pgm_read_dword(&table[crc & 0xff]); \
+	crc = (crc >> 8) ^ pgm_read_dword(&table[crc & 0xff]); \
+	crc = (crc >> 8) ^ pgm_read_dword(&table[crc & 0xff]);
 
 /** CRC32
  * Alias CRC-32/ADCCP, PKZIP, Ethernet, 802.3
@@ -388,28 +395,28 @@ uint32_t FastCRC32::crc32_upd(const uint8_t *data, uint16_t len)
 	uint32_t crc = seed;
 
 	while (((uintptr_t)data & 3) && len) {
-		crc = (crc >> 8) ^ crc_table_crc32[(crc & 0xff) ^ *data++];
+		crc = (crc >> 8) ^ pgm_read_dword(&crc_table_crc32[(crc & 0xff) ^ *data++]);
 		len--;
 	}
 
 	while (len >= 16) {
 		len -= 16;
 		#if CRC_BIGTABLES
-		crc_n4(crc, ((uint32_t *)data)[0], crc_table_crc32_big);
-		crc_n4(crc, ((uint32_t *)data)[1], crc_table_crc32_big);
-		crc_n4(crc, ((uint32_t *)data)[2], crc_table_crc32_big);
-		crc_n4(crc, ((uint32_t *)data)[3], crc_table_crc32_big);
+		crc_n4d(crc, ((uint32_t *)data)[0], crc_table_crc32_big);
+		crc_n4d(crc, ((uint32_t *)data)[1], crc_table_crc32_big);
+		crc_n4d(crc, ((uint32_t *)data)[2], crc_table_crc32_big);
+		crc_n4d(crc, ((uint32_t *)data)[3], crc_table_crc32_big);
 		#else
-		crcsm_n4(crc, ((uint32_t *)data)[0], crc_table_crc32);
-		crcsm_n4(crc, ((uint32_t *)data)[1], crc_table_crc32);
-		crcsm_n4(crc, ((uint32_t *)data)[2], crc_table_crc32);
-		crcsm_n4(crc, ((uint32_t *)data)[3], crc_table_crc32);
+		crcsm_n4d(crc, ((uint32_t *)data)[0], crc_table_crc32);
+		crcsm_n4d(crc, ((uint32_t *)data)[1], crc_table_crc32);
+		crcsm_n4d(crc, ((uint32_t *)data)[2], crc_table_crc32);
+		crcsm_n4d(crc, ((uint32_t *)data)[3], crc_table_crc32);
 		#endif
 		data += 16;
 	}
 
 	while (len--) {
-		crc = (crc >> 8) ^ crc_table_crc32[(crc & 0xff) ^ *data++];
+		crc = (crc >> 8) ^ pgm_read_dword(&crc_table_crc32[(crc & 0xff) ^ *data++]);
 	}
 
 	crc = ~crc;
@@ -437,28 +444,28 @@ uint32_t FastCRC32::cksum_upd(const uint8_t *data, uint16_t len)
 	uint32_t crc = seed;
 
 	while (((uintptr_t)data & 3) && len) {
-		crc = (crc >> 8) ^ crc_table_cksum[(crc & 0xff) ^ *data++];
+		crc = (crc >> 8) ^ pgm_read_dword(&crc_table_cksum[(crc & 0xff) ^ *data++]);
 		len--;
 	}
 
 	while (len >= 16) {
 		len -= 16;
 		#if CRC_BIGTABLES
-		crc_n4(crc, ((uint32_t *)data)[0], crc_table_cksum_big);
-		crc_n4(crc, ((uint32_t *)data)[1], crc_table_cksum_big);
-		crc_n4(crc, ((uint32_t *)data)[2], crc_table_cksum_big);
-		crc_n4(crc, ((uint32_t *)data)[3], crc_table_cksum_big);
+		crc_n4d(crc, ((uint32_t *)data)[0], crc_table_cksum_big);
+		crc_n4d(crc, ((uint32_t *)data)[1], crc_table_cksum_big);
+		crc_n4d(crc, ((uint32_t *)data)[2], crc_table_cksum_big);
+		crc_n4d(crc, ((uint32_t *)data)[3], crc_table_cksum_big);
 		#else
-		crcsm_n4(crc, ((uint32_t *)data)[0], crc_table_cksum);
-		crcsm_n4(crc, ((uint32_t *)data)[1], crc_table_cksum);
-		crcsm_n4(crc, ((uint32_t *)data)[2], crc_table_cksum);
-		crcsm_n4(crc, ((uint32_t *)data)[3], crc_table_cksum);
+		crcsm_n4d(crc, ((uint32_t *)data)[0], crc_table_cksum);
+		crcsm_n4d(crc, ((uint32_t *)data)[1], crc_table_cksum);
+		crcsm_n4d(crc, ((uint32_t *)data)[2], crc_table_cksum);
+		crcsm_n4d(crc, ((uint32_t *)data)[3], crc_table_cksum);
 		#endif
 		data += 16;
 	}
 
 	while (len--) {
-		crc = (crc >> 8) ^ crc_table_cksum[(crc & 0xff) ^ *data++];
+		crc = (crc >> 8) ^ pgm_read_dword(&crc_table_cksum[(crc & 0xff) ^ *data++]);
 	}
 
 	crc = ~REV32(crc);
@@ -474,5 +481,5 @@ uint32_t FastCRC32::cksum(const uint8_t *data, const uint16_t datalen)
   return cksum_upd(data, datalen);
 }
 
-
+#pragma GCC diagnostic pop
 #endif // __MK20DX128__ || __MK20DX256__
