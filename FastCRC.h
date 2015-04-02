@@ -54,6 +54,7 @@
 #define CRC_FLAG_NOREFLECT         (((1<<31) | (1<<30)) | ((0<<29) | (0<<28))) //refin=false refout=false
 #define CRC_FLAG_REFLECT           (((1<<31) | (0<<30)) | ((1<<29) | (0<<28))) //Reflect in- and outgoing bytes (refin=true refout=true)
 #define CRC_FLAG_XOR               (1<<26)                                     //Perform XOR on result
+#define CRC_FLAG_NOREFLECT_8       (0)                                         //For 8-Bit CRC
 #define CRC_FLAG_REFLECT_SWAP      (((1<<31) | (0<<30)) | ((0<<29) | (1<<28))) //For 16-Bit CRC (byteswap)
 #else
 #define CRC_SW 1
