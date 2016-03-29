@@ -22,14 +22,6 @@
  * SOFTWARE.
  */
 
-
-// Teensy 3.0, Teensy 3.1:
-// See K20P64M72SF1RM.pdf (Kinetis), Pages 638 - 641 for documentation of CRC Device
-// See KINETIS_4N30D.pdf for Errata (Errata ID 2776)
-//
-// So, ALL HW-calculations are done as 32 bit.
-//
-//
 //
 // Thanks to:
 // - Catalogue of parametrised CRC algorithms, CRC RevEng
