@@ -110,7 +110,7 @@ uint8_t FastCRC8::update(const uint8_t *data, const uint16_t datalen)
   const uint8_t *src = data;
   const uint8_t *target = src + datalen;
 
-  while (((uintptr_t)src & 0x03) != 0) {
+  while (((uintptr_t)src & 0x03) != 0 && (src < target)) {
     rCRC->CRC8_3 = *src++; //Write 8 BIT
   }
 
@@ -243,7 +243,7 @@ uint16_t FastCRC16::update(const uint8_t *data, const uint16_t datalen)
   const uint8_t *src = data;
   const uint8_t *target = src + datalen;
 
-  while (((uintptr_t)src & 0x03) !=0)  {
+  while (((uintptr_t)src & 0x03) !=0 && (src < target))  {
     rCRC->CRC8_3 = *src++; //Write 8 BIT
   }
 
@@ -336,7 +336,7 @@ uint32_t FastCRC32::update(const uint8_t *data, const uint16_t datalen)
   const uint8_t *src = data;
   const uint8_t *target = src + datalen;
 
-  while (((uintptr_t)src & 0x03) != 0 ) {
+  while (((uintptr_t)src & 0x03) != 0  && (src < target)) {
     rCRC->CRC8_3 = *src++; //Write 8 BIT
   }
 
