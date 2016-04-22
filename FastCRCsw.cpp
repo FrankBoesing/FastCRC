@@ -31,7 +31,7 @@
 //
 
 
-#if !defined(__MK20DX128__) && !defined(__MK20DX256__)
+#if 1 || !defined(__MK20DX128__) && !defined(__MK20DX256__)
 
 #include "FastCRC.h"
 #include "FastCRC_cpu.h"
@@ -361,8 +361,8 @@ FastCRC32::FastCRC32(){}
 #define crc_n4d(crc, data, table) crc ^= data; \
 	crc = pgm_read_dword(&table[(crc & 0xff) + 0x300]) ^	\
 	pgm_read_dword(&table[((crc >> 8) & 0xff) + 0x200]) ^	\
-	pgm_read_dword(&table[((data >> 16) & 0xff) + 0x100]) ^	\
-	pgm_read_dword(&table[data >> 24]);
+	pgm_read_dword(&table[((crc >> 16) & 0xff) + 0x100]) ^	\
+	pgm_read_dword(&table[(crc >> 24) & 0xff]);
 	
 #define crcsm_n4d(crc, data, table) crc ^= data; \
 	crc = (crc >> 8) ^ pgm_read_dword(&table[crc & 0xff]); \
@@ -376,8 +376,11 @@ FastCRC32::FastCRC32(){}
  * @param datalen Length of Data
  * @return CRC value
  */
-
+#if CRC_BIGTABLES
+#define CRC_TABLE_CRC32 crc_table_crc32_big
+#else
 #define CRC_TABLE_CRC32 crc_table_crc32
+#endif
 
 uint32_t FastCRC32::crc32_upd(const uint8_t *data, uint16_t len)
 {
@@ -385,28 +388,28 @@ uint32_t FastCRC32::crc32_upd(const uint8_t *data, uint16_t len)
 	uint32_t crc = seed;
 
 	while (((uintptr_t)data & 3) && len) {
-		crc = (crc >> 8) ^ pgm_read_dword(&crc_table_crc32[(crc & 0xff) ^ *data++]);
+		crc = (crc >> 8) ^ pgm_read_dword(&CRC_TABLE_CRC32[(crc & 0xff) ^ *data++]);
 		len--;
 	}
 
 	while (len >= 16) {
 		len -= 16;
 		#if CRC_BIGTABLES
-		crc_n4d(crc, ((uint32_t *)data)[0], crc_table_crc32_big);
-		crc_n4d(crc, ((uint32_t *)data)[1], crc_table_crc32_big);
-		crc_n4d(crc, ((uint32_t *)data)[2], crc_table_crc32_big);
-		crc_n4d(crc, ((uint32_t *)data)[3], crc_table_crc32_big);
+		crc_n4d(crc, ((uint32_t *)data)[0], CRC_TABLE_CRC32);
+		crc_n4d(crc, ((uint32_t *)data)[1], CRC_TABLE_CRC32);
+		crc_n4d(crc, ((uint32_t *)data)[2], CRC_TABLE_CRC32);
+		crc_n4d(crc, ((uint32_t *)data)[3], CRC_TABLE_CRC32);
 		#else
-		crcsm_n4d(crc, ((uint32_t *)data)[0], crc_table_crc32);
-		crcsm_n4d(crc, ((uint32_t *)data)[1], crc_table_crc32);
-		crcsm_n4d(crc, ((uint32_t *)data)[2], crc_table_crc32);
-		crcsm_n4d(crc, ((uint32_t *)data)[3], crc_table_crc32);
+		crcsm_n4d(crc, ((uint32_t *)data)[0], CRC_TABLE_CRC32);
+		crcsm_n4d(crc, ((uint32_t *)data)[1], CRC_TABLE_CRC32);
+		crcsm_n4d(crc, ((uint32_t *)data)[2], CRC_TABLE_CRC32);
+		crcsm_n4d(crc, ((uint32_t *)data)[3], CRC_TABLE_CRC32);
 		#endif
 		data += 16;
 	}
 
 	while (len--) {
-		crc = (crc >> 8) ^ pgm_read_dword(&crc_table_crc32[(crc & 0xff) ^ *data++]);
+		crc = (crc >> 8) ^ pgm_read_dword(&CRC_TABLE_CRC32[(crc & 0xff) ^ *data++]);
 	}
 
 	crc = ~crc;
@@ -428,34 +431,39 @@ uint32_t FastCRC32::crc32(const uint8_t *data, const uint16_t datalen)
  * @param datalen Length of Data
  * @return CRC value
  */
+ #if CRC_BIGTABLES
+#define CRC_TABLE_CKSUM crc_table_cksum_big
+#else
+#define CRC_TABLE_CKSUM crc_table_cksum
+#endif
 uint32_t FastCRC32::cksum_upd(const uint8_t *data, uint16_t len)
 {
 
 	uint32_t crc = seed;
 
 	while (((uintptr_t)data & 3) && len) {
-		crc = (crc >> 8) ^ pgm_read_dword(&crc_table_cksum[(crc & 0xff) ^ *data++]);
+		crc = (crc >> 8) ^ pgm_read_dword(&CRC_TABLE_CKSUM[(crc & 0xff) ^ *data++]);
 		len--;
 	}
 
 	while (len >= 16) {
 		len -= 16;
 		#if CRC_BIGTABLES
-		crc_n4d(crc, ((uint32_t *)data)[0], crc_table_cksum_big);
-		crc_n4d(crc, ((uint32_t *)data)[1], crc_table_cksum_big);
-		crc_n4d(crc, ((uint32_t *)data)[2], crc_table_cksum_big);
-		crc_n4d(crc, ((uint32_t *)data)[3], crc_table_cksum_big);
+		crc_n4d(crc, ((uint32_t *)data)[0], CRC_TABLE_CKSUM);
+		crc_n4d(crc, ((uint32_t *)data)[1], CRC_TABLE_CKSUM);
+		crc_n4d(crc, ((uint32_t *)data)[2], CRC_TABLE_CKSUM);
+		crc_n4d(crc, ((uint32_t *)data)[3], CRC_TABLE_CKSUM);
 		#else
-		crcsm_n4d(crc, ((uint32_t *)data)[0], crc_table_cksum);
-		crcsm_n4d(crc, ((uint32_t *)data)[1], crc_table_cksum);
-		crcsm_n4d(crc, ((uint32_t *)data)[2], crc_table_cksum);
-		crcsm_n4d(crc, ((uint32_t *)data)[3], crc_table_cksum);
+		crcsm_n4d(crc, ((uint32_t *)data)[0], CRC_TABLE_CKSUM);
+		crcsm_n4d(crc, ((uint32_t *)data)[1], CRC_TABLE_CKSUM);
+		crcsm_n4d(crc, ((uint32_t *)data)[2], CRC_TABLE_CKSUM);
+		crcsm_n4d(crc, ((uint32_t *)data)[3], CRC_TABLE_CKSUM);
 		#endif
 		data += 16;
 	}
 
 	while (len--) {
-		crc = (crc >> 8) ^ pgm_read_dword(&crc_table_cksum[(crc & 0xff) ^ *data++]);
+		crc = (crc >> 8) ^ pgm_read_dword(&CRC_TABLE_CKSUM[(crc & 0xff) ^ *data++]);
 	}
 
 	crc = ~REV32(crc);
