@@ -31,7 +31,7 @@
 //
 
 
-#if 1 || !defined(__MK20DX128__) && !defined(__MK20DX256__)
+#if !defined(__MK20DX128__) && !defined(__MK20DX256__)
 
 #include "FastCRC.h"
 #include "FastCRC_cpu.h"
