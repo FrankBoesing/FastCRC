@@ -156,7 +156,7 @@ uint16_t FastCRC16::mcrf4xx_upd(const uint8_t *data, uint16_t len)
 	uint16_t crc = seed;
 
 	while (((uintptr_t)data & 3) && len) {
-		crc = (crc >> 8) ^ pgm_read_word(crc_table_mcrf4xx[(crc & 0xff) ^ *data++]);
+		crc = (crc >> 8) ^ pgm_read_word(&crc_table_mcrf4xx[(crc & 0xff) ^ *data++]);
 		len--;
 	}
 
@@ -170,7 +170,7 @@ uint16_t FastCRC16::mcrf4xx_upd(const uint8_t *data, uint16_t len)
 	}
 
 	while (len--) {
-		crc = (crc >> 8) ^ pgm_read_word(crc_table_mcrf4xx[(crc & 0xff) ^ *data++]);
+		crc = (crc >> 8) ^ pgm_read_word(&crc_table_mcrf4xx[(crc & 0xff) ^ *data++]);
 	}
 
 	seed = crc;
@@ -196,7 +196,7 @@ uint16_t FastCRC16::modbus_upd(const uint8_t *data, uint16_t len)
 	uint16_t crc = seed;
 
 	while (((uintptr_t)data & 3) && len) {
-		crc = (crc >> 8) ^ pgm_read_word(crc_table_modbus[(crc & 0xff) ^ *data++]);
+		crc = (crc >> 8) ^ pgm_read_word(&crc_table_modbus[(crc & 0xff) ^ *data++]);
 		len--;
 	}
 
@@ -210,7 +210,7 @@ uint16_t FastCRC16::modbus_upd(const uint8_t *data, uint16_t len)
 	}
 
 	while (len--) {
-		crc = (crc >> 8) ^ pgm_read_word(crc_table_modbus[(crc & 0xff) ^ *data++]);
+		crc = (crc >> 8) ^ pgm_read_word(&crc_table_modbus[(crc & 0xff) ^ *data++]);
 	}
 
 	seed = crc;
@@ -236,7 +236,7 @@ uint16_t FastCRC16::kermit_upd(const uint8_t *data, uint16_t len)
 	uint16_t crc = seed;
 
 	while (((uintptr_t)data & 3) && len) {
-		crc = (crc >> 8) ^ pgm_read_word(crc_table_kermit[(crc & 0xff) ^ *data++]);
+		crc = (crc >> 8) ^ pgm_read_word(&crc_table_kermit[(crc & 0xff) ^ *data++]);
 		len--;
 	}
 
@@ -250,7 +250,7 @@ uint16_t FastCRC16::kermit_upd(const uint8_t *data, uint16_t len)
 	}
 
 	while (len--) {
-		crc = (crc >> 8) ^ pgm_read_word(crc_table_kermit[(crc & 0xff) ^ *data++]);
+		crc = (crc >> 8) ^ pgm_read_word(&crc_table_kermit[(crc & 0xff) ^ *data++]);
 	}
 
 	seed = crc;
@@ -277,7 +277,7 @@ uint16_t FastCRC16::xmodem_upd(const uint8_t *data, uint16_t len)
 	uint16_t crc = seed;
 
 	while (((uintptr_t)data & 3) && len) {
-		crc = (crc >> 8) ^ pgm_read_word(crc_table_xmodem[(crc & 0xff) ^ *data++]);
+		crc = (crc >> 8) ^ pgm_read_word(&crc_table_xmodem[(crc & 0xff) ^ *data++]);
 		len--;
 	}
 
@@ -291,7 +291,7 @@ uint16_t FastCRC16::xmodem_upd(const uint8_t *data, uint16_t len)
 	}
 
 	while (len--) {
-		crc = (crc >> 8) ^ pgm_read_word(crc_table_xmodem[(crc & 0xff) ^ *data++]);
+		crc = (crc >> 8) ^ pgm_read_word(&crc_table_xmodem[(crc & 0xff) ^ *data++]);
 	}
 
 	crc = REV16(crc);
@@ -319,7 +319,7 @@ uint16_t FastCRC16::x25_upd(const uint8_t *data, uint16_t len)
 	uint16_t crc = seed;
 
 	while (((uintptr_t)data & 3) && len) {
-		crc = (crc >> 8) ^ pgm_read_word(crc_table_x25[(crc & 0xff) ^ *data++]);
+		crc = (crc >> 8) ^ pgm_read_word(&crc_table_x25[(crc & 0xff) ^ *data++]);
 		len--;
 	}
 
@@ -333,7 +333,7 @@ uint16_t FastCRC16::x25_upd(const uint8_t *data, uint16_t len)
 	}
 
 	while (len--) {
-		crc = (crc >> 8) ^ pgm_read_word(crc_table_x25[(crc & 0xff) ^ *data++]);
+		crc = (crc >> 8) ^ pgm_read_word(&crc_table_x25[(crc & 0xff) ^ *data++]);
 	}
 
 	crc = ~crc;
