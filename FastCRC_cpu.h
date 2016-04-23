@@ -32,14 +32,14 @@
 //Reverse byte order (16 bit)
 #if defined(__thumb__)  
 static inline __attribute__((always_inline)) 
-uint32_t REV16( unsigned int value) //ARM-THUMB
+uint32_t REV16( uint32_t value) //ARM-THUMB
 {
 	asm ("rev16 %0, %1" : "=r" (value) : "r" (value) );
 	return(value);
 }
 #else
 static inline __attribute__((always_inline)) 
-uint32_t int REV16( unsigned int value) //generic
+uint32_t REV16( uint32_t value) //generic
 {
 	return (value >> 8) | ((value & 0xff) << 8);
 }
@@ -52,14 +52,14 @@ uint32_t int REV16( unsigned int value) //generic
 //Reverse byte order (32 bit)
 #if defined(__thumb__) 
 static inline  __attribute__((always_inline))
-unsigned int REV32( unsigned int value) //ARM-THUMB
+uint32_t REV32( uuint32_t value) //ARM-THUMB
 {
 	asm ("rev %0, %1" : "=r" (value) : "r" (value) );
 	return(value);
 }
 #else
 static inline  __attribute__((always_inline))
-unsigned int REV32( unsigned int value) //generic
+uint32_t REV32( uint32_t value) //generic
 {
 	value = (value >> 16) | ((value & 0xffff) << 16);
 	return ((value >> 8) & 0xff00ff) | ((value & 0xff00ff) << 8);
