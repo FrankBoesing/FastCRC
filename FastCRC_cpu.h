@@ -52,7 +52,7 @@ uint32_t REV16( uint32_t value) //generic
 //Reverse byte order (32 bit)
 #if defined(__thumb__) 
 static inline  __attribute__((always_inline))
-uint32_t REV32( uuint32_t value) //ARM-THUMB
+uint32_t REV32( uint32_t value) //ARM-THUMB
 {
 	asm ("rev %0, %1" : "=r" (value) : "r" (value) );
 	return(value);
