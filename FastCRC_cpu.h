@@ -1,5 +1,5 @@
 /* FastCRC library code is placed under the MIT license
- * Copyright (c) 2014,2015 Frank Bösing
+ * Copyright (c) 2014,2015,2016 Frank Bösing
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -32,14 +32,14 @@
 //Reverse byte order (16 bit)
 #if defined(__thumb__)  
 static inline __attribute__((always_inline)) 
-unsigned int REV16( unsigned int value) //ARM-THUMB
+uint32_t REV16( unsigned int value) //ARM-THUMB
 {
 	asm ("rev16 %0, %1" : "=r" (value) : "r" (value) );
 	return(value);
 }
 #else
 static inline __attribute__((always_inline)) 
-unsigned int REV16( unsigned int value) //generic
+uint32_t int REV16( unsigned int value) //generic
 {
 	return (value >> 8) | ((value & 0xff) << 8);
 }
