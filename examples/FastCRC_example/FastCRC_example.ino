@@ -6,7 +6,7 @@
 #include <util/crc16.h>
 #include <FastCRC.h>
 
-#define BUFSIZE 16384
+#define BUFSIZE 1024
 
 
 FastCRC8 CRC8;
