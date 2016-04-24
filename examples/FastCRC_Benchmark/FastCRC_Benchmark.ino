@@ -11,7 +11,7 @@
 #include <FastCRC.h>
 
 
-#define LOFLASH // <- Uncomment this for devices with small flashmemory
+//#define LOFLASH // <- Uncomment this for devices with small flashmemory
 
 //Determince the max. possible size for the data:
 #if defined(__MK20DX256__)
