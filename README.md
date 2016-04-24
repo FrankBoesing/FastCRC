@@ -47,3 +47,22 @@ CRC32, CRC-32/ADCCP, PKZIP, ETHERNET, 802.3
   
 CKSUM, CRC-32/POSIX
   (poly=0x04c11db7 init=0x00000000 refin=false refout=false xorout=0xffffffff check=0x765e7680)
+
+
+CRC Benchmark Example
+---
+```
+CRC Benchmark (Teensy 3.2)
+F_CPU: 96 MHz, length: 57344 Bytes.
+
+Maxim (iButton) FastCRC:	Value:0xD2, Time: 1048 us (437.74 mbs)
+Maxim (iButton) builtin:	Value:0xD2, Time: 42501 us (10.79 mbs)
+MODBUS FastCRC:	     Value:0x25F1, Time: 1051 us (436.49 mbs)
+MODBUS builtin: 	 Value:0x25F1, Time: 41889 us (10.95 mbs)
+XMODEM FastCRC:	     Value:0xB217, Time: 1048 us (437.74 mbs)
+XMODEM builtin: 	 Value:0xB217, Time: 47284 us (9.70 mbs)
+MCRF4XX FastCRC:	 Value:0x4BE4, Time: 1048 us (437.74 mbs)
+MCRF4XX builtin:	 Value:0x4BE4, Time: 7785 us (58.93 mbs)
+KERMIT FastCRC:	     Value:0x9137, Time: 1049 us (437.32 mbs)
+Ethernet FastCRC:	 Value:0x29C6653B, Time: 1051 us (436.49 mbs)
+```
