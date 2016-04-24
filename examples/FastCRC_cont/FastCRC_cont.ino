@@ -2,6 +2,8 @@
   FastCRC-Example
 
   (c) Frank Boesing 2014
+  
+  This example shows how to use the update functions.
 */
 
 #include <FastCRC.h>
