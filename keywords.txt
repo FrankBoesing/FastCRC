@@ -16,15 +16,24 @@ FastCRC32	KEYWORD1
 #######################################
 
 ccit	KEYWORD2
+ccit_upd	KEYWORD2
 kermit	KEYWORD2
+kermit_upd	KEYWORD2
 mcrf4xx	KEYWORD2
+mcrf4xx_upd	KEYWORD2
 modbus	KEYWORD2
+modbus_upd	KEYWORD2
 xmodem	KEYWORD2
+xmodem_upd	KEYWORD2
 x25		KEYWORD2
+x25_upd		KEYWORD2
 update	KEYWORD2
+update_upd	KEYWORD2
 generic	KEYWORD2
 crc32	KEYWORD2
+crc32_upd	KEYWORD2
 cksum	KEYWORD2
+cksum_upd	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
