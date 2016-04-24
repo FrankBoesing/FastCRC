@@ -9,14 +9,15 @@
 FastCRC8	KEYWORD1
 FastCRC16	KEYWORD1
 FastCRC32	KEYWORD1
-
+CRC8	KEYWORD1
+CRC16	KEYWORD1
+CRC32	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
-
-ccit	KEYWORD2
-ccit_upd	KEYWORD2
+ccitt	KEYWORD2
+ccitt_upd	KEYWORD2
 kermit	KEYWORD2
 kermit_upd	KEYWORD2
 mcrf4xx	KEYWORD2
