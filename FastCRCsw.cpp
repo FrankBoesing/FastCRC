@@ -37,7 +37,6 @@
 #include "FastCRC_cpu.h"
 #include "FastCRC_tables.h"
 
-
 // ================= 8-BIT CRC ===================
 
 /** Constructor
@@ -112,7 +111,6 @@ uint16_t FastCRC16::ccitt_upd(const uint8_t *data, uint16_t len)
 {
 
 	uint16_t crc = seed;
-
 	while (((uintptr_t)data & 3) && len) {
 		crc = (crc >> 8) ^ pgm_read_word(&crc_table_ccitt[(crc & 0xff) ^ *data++]);
 		len--;
@@ -130,10 +128,10 @@ uint16_t FastCRC16::ccitt_upd(const uint8_t *data, uint16_t len)
 	while (len--) {
 		crc = (crc >> 8) ^ pgm_read_word(&crc_table_ccitt[(crc & 0xff) ^ *data++]);
 	}
-
+	
+	seed = crc;	
 	crc = REV16(crc);
-
-	seed = crc;
+	
 	return crc;
 }
 uint16_t FastCRC16::ccitt(const uint8_t *data,const uint16_t datalen)
@@ -294,9 +292,8 @@ uint16_t FastCRC16::xmodem_upd(const uint8_t *data, uint16_t len)
 		crc = (crc >> 8) ^ pgm_read_word(&crc_table_xmodem[(crc & 0xff) ^ *data++]);
 	}
 
-	crc = REV16(crc);
-
 	seed = crc;
+	crc = REV16(crc);	
 	return crc;
 }
 
@@ -465,10 +462,9 @@ uint32_t FastCRC32::cksum_upd(const uint8_t *data, uint16_t len)
 	while (len--) {
 		crc = (crc >> 8) ^ pgm_read_dword(&CRC_TABLE_CKSUM[(crc & 0xff) ^ *data++]);
 	}
-
-	crc = ~REV32(crc);
-
+	
 	seed = crc;
+	crc = ~REV32(crc);	
 	return crc;
 }
 
