@@ -64,6 +64,82 @@ static volatile CRC_T * const rCRC = (CRC_T *)0x40032000;
 #define CRC_CTRL_TCRC  24 // Width of CRC protocol (0=16 BIT, 1=32 BIT)
 #define CRC_CTRL_TOTR1 29 // TOTR[1]
 
+// ================= 7-BIT CRC ===================
+/** Constructor
+ * Enables CRC-clock
+ */
+FastCRC7::FastCRC7(){
+  SIM_SCGC6 |= SIM_SCGC6_CRC;
+}
+
+/** CRC 7
+ * MultiMediaCard interface
+ * @param data Pointer to Data
+ * @param datalen Length of Data
+ * @return CRC value
+ */
+uint8_t FastCRC7::crc7(const uint8_t *data, const uint16_t datalen)
+{
+  // poly=0x09 init=0x00 refin=false refout=false xorout=0x00 check=0x75
+   return (generic(0x09, 0, CRC_FLAG_NOREFLECT, data, datalen));
+}
+
+/** Update
+ * Call for subsequent calculations with previous seed
+ * @param data Pointer to Data
+ * @param datalen Length of Data
+ * @return CRC value
+ */
+uint8_t FastCRC7::update(const uint8_t *data, const uint16_t datalen)
+{
+
+  const uint8_t *src = data;
+  const uint8_t *target = src + datalen;
+
+  while (((uintptr_t)src & 0x03) != 0 && (src < target)) {
+    rCRC->CRC8_3 = *src++; //Write 8 BIT
+  }
+
+  while (src <= target-4) {
+    rCRC->CRC = *( uint32_t  *)src; //Write 32 BIT
+    src += 4;
+  }
+
+  while (src < target) {
+    rCRC->CRC8_3 = *src++; //Write 8 Bit
+  }
+
+//TODO: Check handling of  CRC_CTRL_TOTR1 for other CRC7s
+/*
+  if (rCRC->CTRL & (1<<CRC_CTRL_TOTR1))
+    return rCRC->CRC8 >> 1;
+  else
+*/
+    return rCRC->CRC8_3 >> 1;
+}
+
+/** generic function for all 7-Bit CRCs
+ * @param polynom Polynom
+ * @param seed Seed
+ * @param flags Flags
+ * @param data Pointer to Data
+ * @param datalen Length of Data
+ * @return CRC value
+ */
+uint8_t FastCRC7::generic(const uint8_t polynom, const uint8_t seed, const uint32_t flags, const uint8_t *data,const uint16_t datalen)
+{
+
+  rCRC->CTRL  = flags | (1<<CRC_CTRL_TCRC) | (1<<CRC_CTRL_WAS);                      // 32Bit Mode, Prepare to write seed(25)
+  rCRC->GPOLY = ((uint32_t)polynom)<<(24 + 1);                                       // Set polynom
+  rCRC->CRC   = ((uint32_t)seed<<(24 + 1));                                          // Write seed
+  rCRC->CTRL  = flags | (1<<CRC_CTRL_TCRC);								  		  	 // Clear WAS Bit - prepare to write data
+
+  return update(data, datalen);
+}
+
+uint8_t FastCRC7::crc7_upd(const uint8_t *data, uint16_t datalen){return update(data, datalen);}
+
+
 
 // ================= 8-BIT CRC ===================
 
@@ -73,6 +149,7 @@ static volatile CRC_T * const rCRC = (CRC_T *)0x40032000;
 FastCRC8::FastCRC8(){
   SIM_SCGC6 |= SIM_SCGC6_CRC;
 }
+
 
 /** SMBUS CRC
  * aka CRC-8
@@ -143,7 +220,7 @@ uint8_t FastCRC8::generic(const uint8_t polynom, const uint8_t seed, const uint3
   rCRC->CTRL  = flags | (1<<CRC_CTRL_TCRC) | (1<<CRC_CTRL_WAS);                      // 32Bit Mode, Prepare to write seed(25)
   rCRC->GPOLY = ((uint32_t)polynom)<<24;                                             // Set polynom
   rCRC->CRC   = ((uint32_t)seed<<24);                                                // Write seed
-  rCRC->CTRL  = flags | (1<<CRC_CTRL_TCRC);								  		  	 // Clear WAS Bit - prepare to write data  
+  rCRC->CTRL  = flags | (1<<CRC_CTRL_TCRC);								  		  	 // Clear WAS Bit - prepare to write data
 
   return update(data, datalen);
 }

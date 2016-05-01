@@ -37,6 +37,37 @@
 #include "FastCRC_cpu.h"
 #include "FastCRC_tables.h"
 
+
+// ================= 7-BIT CRC ===================
+
+/** Constructor
+ */
+FastCRC7::FastCRC7(){}
+
+/** SMBUS CRC
+ * aka CRC-8
+ * @param data Pointer to Data
+ * @param datalen Length of Data
+ * @return CRC value
+ */
+uint8_t FastCRC7::crc7_upd(const uint8_t *data, uint16_t datalen)
+{
+	uint8_t crc = seed;
+	if (datalen) do {
+		crc = pgm_read_byte(&crc_table_crc7[crc ^ *data]);
+		data++;
+	} while (--datalen);
+	seed = crc;
+	return crc >> 1;
+}
+
+uint8_t FastCRC7::crc7(const uint8_t *data, const uint16_t datalen)
+{
+  // poly=0x09 init=0x00 refin=false refout=false xorout=0x00 check=0x75
+  seed = 0x00;
+  return crc7_upd(data, datalen);
+}
+
 // ================= 8-BIT CRC ===================
 
 /** Constructor

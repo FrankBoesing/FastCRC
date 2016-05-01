@@ -59,6 +59,25 @@
 #else
 #define CRC_SW 1
 #endif
+
+// ================= 7-BIT CRC ===================
+class FastCRC7
+{
+public:
+  FastCRC7();
+  uint8_t crc7(const uint8_t *data, const uint16_t datalen);		// (MultiMediaCard interface)
+  uint8_t crc7_upd(const uint8_t *data, const uint16_t datalen);	// Call for subsequent calculations with previous seed.
+#if !CRC_SW
+  uint8_t generic(const uint8_t polyom, const uint8_t seed, const uint32_t flags, const uint8_t *data, const uint16_t datalen); //Not available in non-hw-variant (not T3.x)
+#endif
+private:
+#if CRC_SW
+  uint8_t seed;
+#else
+  uint8_t update(const uint8_t *data, const uint16_t datalen);
+#endif
+};
+
 // ================= 8-BIT CRC ===================
 
 class FastCRC8

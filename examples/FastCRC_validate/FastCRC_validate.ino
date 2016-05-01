@@ -1,42 +1,40 @@
-/*
-
-  FastCRC
-  Validate computed CRCs
-
-  (c) Frank Boesing 2014
-
-*/
+//FastCRC
+//Validate computed CRCs
+//
+//(c) Frank Boesing 2014
 
 #include <util/crc16.h>
 #include <FastCRC.h>
 
-//This Sketch needs more than 32KB Flashmemory on devices without inbuilt hardware-crc.
-//To save flash, remove some of the CRC-Checks below.
-
-
+FastCRC7 CRC7;
 FastCRC8 CRC8;
 FastCRC16 CRC16;
 FastCRC32 CRC32;
 
-uint8_t buf[9] = {'1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
-void printVals(char * name, uint32_t check, uint32_t val) {
-  Serial.print(name);
-  if (check == val)
-    Serial.print(" is ok");
-  else
-    Serial.print(" is NOT ok");
-  Serial.println();
+uint8_t buf[9] = {'1','2','3','4','5','6','7','8','9'};
+
+
+void printVals(char * name, uint32_t check, uint32_t val){
+	Serial.print(name);
+	if (check == val)
+		Serial.print(" is ok");
+	else
+		Serial.print(" is NOT ok");
+	Serial.println();
 }
 
 void setup() {
-  uint32_t crc;
+uint32_t crc;
 
   delay(1500);
   Serial.begin(115200);
 
   Serial.println("CRC Validation");
-
+  
+  crc = CRC7.crc7(buf, sizeof(buf));
+  printVals("CRC7", 0x75, crc);
+  
   crc = CRC8.smbus(buf, sizeof(buf));
   printVals("SMBUS", 0xf4, crc);
 
@@ -71,4 +69,3 @@ void setup() {
 
 void loop() {
 }
-
