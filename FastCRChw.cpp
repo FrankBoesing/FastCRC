@@ -33,7 +33,7 @@
 //
 
 
-#if defined(__MK20DX128__) || defined(__MK20DX256__)
+#if defined(__KINETISK__)
 
 #include "mk20dx128.h"
 #include "FastCRC.h"
@@ -451,4 +451,4 @@ uint32_t FastCRC32::generic(const uint32_t polynom, const uint32_t seed, const u
 uint32_t FastCRC32::crc32_upd(const uint8_t *data, uint16_t len){return update(data, len);}
 uint32_t FastCRC32::cksum_upd(const uint8_t *data, uint16_t len){return update(data, len);}
 
-#endif // __MK20DX128__ || __MK20DX256__
+#endif // #if defined(__KINETISK__)
