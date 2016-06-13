@@ -31,7 +31,7 @@
 //
 
 
-#if !defined(__MK20DX128__) && !defined(__MK20DX256__)
+#if !defined(__KINETISK__)
 
 #include "FastCRC.h"
 #include "FastCRC_cpu.h"
@@ -506,4 +506,4 @@ uint32_t FastCRC32::cksum(const uint8_t *data, const uint16_t datalen)
   return cksum_upd(data, datalen);
 }
 
-#endif // __MK20DX128__ || __MK20DX256__
+#endif // #if !defined(__KINETISK__)
