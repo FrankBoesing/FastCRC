@@ -14,8 +14,8 @@
 //#define LOFLASH // <- Uncomment this for devices with small flashmemory
 
 //Determince the max. possible size for the data:
-#if defined(__MK20DX256__)
-#define BUFSIZE (56 * 1024) // 56KB for Teensy 3.2/3.2
+#if defined(__MK20DX256__) || defined(__MK64FX512__) || defined(__MK66FX1M0__)
+#define BUFSIZE (56 * 1024) // 56KB for Teensy 3.x
 #elif defined(__MK20DX128__)
 #define BUFSIZE (12 * 1024) // 12KB for Teensy 3.0
 #elif defined(__MKL26Z64__)
