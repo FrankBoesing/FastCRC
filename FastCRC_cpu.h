@@ -25,7 +25,7 @@
  
 // CPU-specific implementations of helper functions
 
-#if !defined(__KINETISK__)
+#if !defined(KINETISK)
 #if !defined(FastCRC_cpu)
 #define FastCRC_cpu
 
