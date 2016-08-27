@@ -30,8 +30,8 @@
 // - Danjel McGougan (CRC-Table-Generator)
 //
 
-
-#if !defined(__KINETISK__)
+#include "Arduino.h"
+#if !defined(KINETISK)
 
 #include "FastCRC.h"
 #include "FastCRC_cpu.h"
@@ -506,4 +506,4 @@ uint32_t FastCRC32::cksum(const uint8_t *data, const uint16_t datalen)
   return cksum_upd(data, datalen);
 }
 
-#endif // #if !defined(__KINETISK__)
+#endif // #if !defined(KINETISK)
