@@ -23,7 +23,7 @@ void setup() {
 
   Serial.print("CCITT-CRC of \"");
 
-  for (int i = 0; i < sizeof(buf); i++) {
+  for (unsigned int i = 0; i < sizeof(buf); i++) {
     Serial.print((char) buf[i]);
   }
 

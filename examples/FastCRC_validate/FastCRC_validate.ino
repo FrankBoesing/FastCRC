@@ -15,7 +15,7 @@ FastCRC32 CRC32;
 uint8_t buf[9] = {'1','2','3','4','5','6','7','8','9'};
 
 
-void printVals(char * name, uint32_t check, uint32_t val){
+void printVals(const char * name, uint32_t check, uint32_t val){
 	Serial.print(name);
 	if (check == val)
 		Serial.print(" is ok");
