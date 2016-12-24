@@ -20,7 +20,7 @@ void setup() {
 
   Serial.print("CRC32 of \"");
 
-  for (int i = 0; i < sizeof(buf); i++) {
+  for (unsigned int i = 0; i < sizeof(buf); i++) {
     Serial.print((char) buf[i]);
   }
 
