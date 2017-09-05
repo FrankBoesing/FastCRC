@@ -17,7 +17,7 @@
 #if defined(__MK20DX256__) || defined(__MK64FX512__) || defined(__MK66FX1M0__)
 #define BUFSIZE (56 * 1024) // 56KB for Teensy 3.x
 #elif defined(__MK20DX128__)
-#define BUFSIZE (12 * 1024) // 12KB for Teensy 3.0
+#define BUFSIZE (10 * 1024) // 10KB for Teensy 3.0
 #elif defined(__MKL26Z64__)
 #define BUFSIZE (4 * 1024)  // 4KB for Teensy LC
 #else
