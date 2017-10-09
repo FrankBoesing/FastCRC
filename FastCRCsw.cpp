@@ -364,9 +364,9 @@ uint16_t FastCRC16::x25_upd(const uint8_t *data, uint16_t len)
 		crc = (crc >> 8) ^ pgm_read_word(&crc_table_x25[(crc & 0xff) ^ *data++]);
 	}
 
+	seed = crc;
 	crc = ~crc;
 
-	seed = crc;
 	return crc;
 }
 
@@ -440,9 +440,9 @@ uint32_t FastCRC32::crc32_upd(const uint8_t *data, uint16_t len)
 		crc = (crc >> 8) ^ pgm_read_dword(&CRC_TABLE_CRC32[(crc & 0xff) ^ *data++]);
 	}
 
+	seed = crc;
 	crc = ~crc;
 
-	seed = crc;
 	return crc;
 }
 
