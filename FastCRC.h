@@ -45,7 +45,7 @@
 
 #if !defined(FastCRC_h)
 #define FastCRC_h
-#include "inttypes.h"
+#include <inttypes.h>
 
 
 // ================= DEFINES ===================
@@ -60,43 +60,45 @@
 #define CRC_SW 1
 #endif
 
-// ================= 7-BIT CRC ===================
-class FastCRC7
-{
-public:
-  FastCRC7();
-  uint8_t crc7(const uint8_t *data, const uint16_t datalen);		// (MultiMediaCard interface)
-  uint8_t crc7_upd(const uint8_t *data, const uint16_t datalen);	// Call for subsequent calculations with previous seed.
-#if !CRC_SW
-  uint8_t generic(const uint8_t polyom, const uint8_t seed, const uint32_t flags, const uint8_t *data, const uint16_t datalen); //Not available in non-hw-variant (not T3.x)
-#endif
-private:
-#if CRC_SW
-  uint8_t seed;
-#else
-  uint8_t update(const uint8_t *data, const uint16_t datalen);
-#endif
-};
 
 // ================= 8-BIT CRC ===================
 
 class FastCRC8
 {
 public:
-  FastCRC8();
-  uint8_t smbus(const uint8_t *data, const uint16_t datalen);		// Alias CRC-8
-  uint8_t maxim(const uint8_t *data, const uint16_t datalen);		// Equivalent to _crc_ibutton_update() in crc16.h from avr_libc
-  
-  uint8_t smbus_upd(const uint8_t *data, uint16_t datalen);			// Call for subsequent calculations with previous seed.
-  uint8_t maxim_upd(const uint8_t *data, uint16_t datalen);			// Call for subsequent calculations with previous seed.
+    FastCRC8();
+    uint8_t smbus(const uint8_t *data, const uint16_t datalen);		// Alias CRC-8
+    uint8_t maxim(const uint8_t *data, const uint16_t datalen);		// Equivalent to _crc_ibutton_update() in crc16.h from avr_libc
+
+    uint8_t smbus_upd(const uint8_t *data, uint16_t datalen);			// Call for subsequent calculations with previous seed.
+    uint8_t maxim_upd(const uint8_t *data, uint16_t datalen);			// Call for subsequent calculations with previous seed.
+    uint8_t crc_general_8bits_upd(const uint8_t *data, uint16_t len, const uint8_t * table);
 #if !CRC_SW
-  uint8_t generic(const uint8_t polyom, const uint8_t seed, const uint32_t flags, const uint8_t *data, const uint16_t datalen); //Not available in non-hw-variant (not T3.x)
+    uint8_t generic(const uint8_t polyom, const uint8_t seed, const uint32_t flags, const uint8_t *data, const uint16_t datalen); //Not available in non-hw-variant (not T3.x)
 #endif
 private:
 #if CRC_SW
-  uint8_t seed;
+    uint8_t seed;
 #else
-  uint8_t update(const uint8_t *data, const uint16_t datalen);
+    uint8_t update(const uint8_t *data, const uint16_t datalen);
+#endif
+};
+
+// ================= 7-BIT CRC ===================
+class FastCRC7: public FastCRC8
+{
+public:
+    FastCRC7();
+    uint8_t crc7(const uint8_t *data, const uint16_t datalen);		// (MultiMediaCard interface)
+    uint8_t crc7_upd(const uint8_t *data, const uint16_t datalen);	// Call for subsequent calculations with previous seed.
+#if !CRC_SW
+    uint8_t generic(const uint8_t polyom, const uint8_t seed, const uint32_t flags, const uint8_t *data, const uint16_t datalen); //Not available in non-hw-variant (not T3.x)
+#endif
+private:
+#if CRC_SW
+    uint8_t seed;
+#else
+    uint8_t update(const uint8_t *data, const uint16_t datalen);
 #endif
 };
 
@@ -105,28 +107,29 @@ private:
 class FastCRC16
 {
 public:
-  FastCRC16();
-  uint16_t ccitt(const uint8_t *data, const uint16_t datalen);      // Alias "false CCITT"
-  uint16_t mcrf4xx(const uint8_t *data,const uint16_t datalen);     // Equivalent to _crc_ccitt_update() in crc16.h from avr_libc
-  uint16_t kermit(const uint8_t *data, const uint16_t datalen);     // Alias CRC-16/CCITT, CRC-16/CCITT-TRUE, CRC-CCITT
-  uint16_t modbus(const uint8_t *data, const uint16_t datalen);     // Equivalent to _crc_16_update() in crc16.h from avr_libc
-  uint16_t xmodem(const uint8_t *data, const uint16_t datalen);     // Alias ZMODEM, CRC-16/ACORN
-  uint16_t x25(const uint8_t *data, const uint16_t datalen);        // Alias CRC-16/IBM-SDLC, CRC-16/ISO-HDLC, CRC-B
-  
-  uint16_t ccitt_upd(const uint8_t *data, uint16_t len);			// Call for subsequent calculations with previous seed
-  uint16_t mcrf4xx_upd(const uint8_t *data, uint16_t len);			// Call for subsequent calculations with previous seed
-  uint16_t kermit_upd(const uint8_t *data, uint16_t len);			// Call for subsequent calculations with previous seed
-  uint16_t modbus_upd(const uint8_t *data, uint16_t len);			// Call for subsequent calculations with previous seed
-  uint16_t xmodem_upd(const uint8_t *data, uint16_t len);			// Call for subsequent calculations with previous seed
-  uint16_t x25_upd(const uint8_t *data, uint16_t len);				// Call for subsequent calculations with previous seed
+    FastCRC16();
+    uint16_t crc_general_16bits_upd(const uint8_t *data, uint16_t len, const uint16_t * table, bool reverse);
+    uint16_t ccitt(const uint8_t *data, const uint16_t datalen);      // Alias "false CCITT"
+    uint16_t mcrf4xx(const uint8_t *data,const uint16_t datalen);     // Equivalent to _crc_ccitt_update() in crc16.h from avr_libc
+    uint16_t kermit(const uint8_t *data, const uint16_t datalen);     // Alias CRC-16/CCITT, CRC-16/CCITT-TRUE, CRC-CCITT
+    uint16_t modbus(const uint8_t *data, const uint16_t datalen);     // Equivalent to _crc_16_update() in crc16.h from avr_libc
+    uint16_t xmodem(const uint8_t *data, const uint16_t datalen);     // Alias ZMODEM, CRC-16/ACORN
+    uint16_t x25(const uint8_t *data, const uint16_t datalen);        // Alias CRC-16/IBM-SDLC, CRC-16/ISO-HDLC, CRC-B
+
+    uint16_t ccitt_upd(const uint8_t *data, uint16_t len);			// Call for subsequent calculations with previous seed
+    uint16_t mcrf4xx_upd(const uint8_t *data, uint16_t len);			// Call for subsequent calculations with previous seed
+    uint16_t kermit_upd(const uint8_t *data, uint16_t len);			// Call for subsequent calculations with previous seed
+    uint16_t modbus_upd(const uint8_t *data, uint16_t len);			// Call for subsequent calculations with previous seed
+    uint16_t xmodem_upd(const uint8_t *data, uint16_t len);			// Call for subsequent calculations with previous seed
+    uint16_t x25_upd(const uint8_t *data, uint16_t len);				// Call for subsequent calculations with previous seed
 #if !CRC_SW
-  uint16_t generic(const uint16_t polyom, const uint16_t seed, const uint32_t flags, const uint8_t *data, const uint16_t datalen); //Not available in non-hw-variant (not T3.x)
+    uint16_t generic(const uint16_t polyom, const uint16_t seed, const uint32_t flags, const uint8_t *data, const uint16_t datalen); //Not available in non-hw-variant (not T3.x)
 #endif
 private:
 #if CRC_SW
-  uint16_t seed;
+    uint16_t seed;
 #else
-  uint16_t update(const uint8_t *data, const uint16_t datalen);
+    uint16_t update(const uint8_t *data, const uint16_t datalen);
 #endif
 };
 
@@ -135,20 +138,22 @@ private:
 class FastCRC32
 {
 public:
-  FastCRC32();
-  uint32_t crc32(const uint8_t *data, const uint16_t datalen);		// Alias CRC-32/ADCCP, PKZIP, Ethernet, 802.3
-  uint32_t cksum(const uint8_t *data, const uint16_t datalen);		// Alias CRC-32/POSIX
+    FastCRC32();
+    uint32_t crc_general_32bits_upd(const uint8_t *data, uint16_t len,const uint32_t  *table, bool rev);
+    uint32_t crc32(const uint8_t *data, const uint16_t datalen);		// Alias CRC-32/ADCCP, PKZIP, Ethernet, 802.3
+    uint32_t cksum(const uint8_t *data, const uint16_t datalen);		// Alias CRC-32/POSIX
 
-  uint32_t crc32_upd(const uint8_t *data, uint16_t len);			// Call for subsequent calculations with previous seed
-  uint32_t cksum_upd(const uint8_t *data, uint16_t len);			// Call for subsequent calculations with previous seed
+    uint32_t crc32_upd(const uint8_t *data, uint16_t len);			// Call for subsequent calculations with previous seed
+    uint32_t cksum_upd(const uint8_t *data, uint16_t len);			// Call for subsequent calculations with previous seed
+
 #if !CRC_SW
-  uint32_t generic(const uint32_t polyom, const uint32_t seed, const uint32_t flags, const uint8_t *data, const uint16_t datalen); //Not available in non-hw-variant (not T3.x)
+    uint32_t generic(const uint32_t polyom, const uint32_t seed, const uint32_t flags, const uint8_t *data, const uint16_t datalen); //Not available in non-hw-variant (not T3.x)
 #endif
 private:
 #if CRC_SW
-  uint32_t seed;
+    uint32_t seed;
 #else
-  uint32_t update(const uint8_t *data, const uint16_t datalen);
+    uint32_t update(const uint8_t *data, const uint16_t datalen);
 #endif
 };
 

@@ -1,0 +1,21 @@
+{
+  "name": "FastCRC",
+  "keywords": "CRC, CRC7, CRC8, CRC16, CRC32",
+  "description": "Fast CRC routines",
+  "frameworks": "arduino",
+  "platforms": "*",
+  "repository":
+  {
+    "type": "git",
+    "url": "https://github.com/FrankBoesing/FastCRC.git"
+  },
+  "authors":
+  [
+    {
+      "name": "Frank Bösing",
+      "email": "f.boesing@gmx.de",
+      "maintainer": true
+    }
+  ],
+  "version": "1.3"
+}
