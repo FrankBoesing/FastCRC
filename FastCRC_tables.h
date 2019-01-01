@@ -31,7 +31,7 @@
 #define FastCRC_tables
 #include "inttypes.h"
 
-#ifdef __AVR__
+#ifdef __AVR__ || defined(__IMXRT1052__) || defined(__IMXRT1060__)
 #include <avr/pgmspace.h>
 #else
 #include <pgmspace.h>	
