@@ -32,7 +32,7 @@
 #include "inttypes.h"
 
 #if !defined(__SAM3X8E__)
-#if defined(__AVR__ ) || defined(__IMXRT1052__) || defined(__IMXRT1060__)
+#if defined(__AVR__ ) || defined(__IMXRT1052__) || defined(__IMXRT1062__)
 #include <avr/pgmspace.h>
 #else
 #include <pgmspace.h>	
