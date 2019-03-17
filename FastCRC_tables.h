@@ -32,7 +32,7 @@
 #include "inttypes.h"
 
 #if !defined(__SAM3X8E__)
-#if defined(__AVR__ ) || defined(__IMXRT1052__) || defined(__IMXRT1062__)
+#if defined(__AVR__ ) || defined(__IMXRT1052__) || defined(__IMXRT1062__) || defined(ARDUINO_ARCH_STM32F1)
 #include <avr/pgmspace.h>
 #else
 #include <pgmspace.h>	
