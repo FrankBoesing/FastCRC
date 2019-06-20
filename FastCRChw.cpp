@@ -1,5 +1,5 @@
 /* FastCRC library code is placed under the MIT license
- * Copyright (c) 2014,2015 Frank Bösing
+ * Copyright (c) 2014-2019 Frank Bösing
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -226,6 +226,84 @@ uint8_t FastCRC8::generic(const uint8_t polynom, const uint8_t seed, const uint3
 }
 uint8_t FastCRC8::smbus_upd(const uint8_t *data, uint16_t datalen){return update(data, datalen);}
 uint8_t FastCRC8::maxim_upd(const uint8_t *data, uint16_t datalen){return update(data, datalen);}
+
+
+
+// ================= 14-BIT CRC ===================
+
+/** Constructor
+ * Enables CRC-clock
+ */
+FastCRC14::FastCRC14(){
+  SIM_SCGC6 |= SIM_SCGC6_CRC;
+}
+
+/** CRC-14/DARC
+ * @param data Pointer to Data
+ * @param datalen Length of Data
+ * @return CRC value
+ */
+uint16_t FastCRC14::darc(const uint8_t *data,const uint16_t datalen)
+{
+ // poly=0x0805 init=0x0000 refin=true refout=true xorout=0x0000 check=0x082d residue=0x0000
+  return generic(0x0805, 0x0000, CRC_FLAG_REFLECT, data, datalen);
+}
+
+
+/** Update
+ * Call for subsequent calculations with previous seed
+ * @param data Pointer to Data
+ * @param datalen Length of Data
+ * @return CRC value
+ */
+uint16_t FastCRC14::update(const uint8_t *data, const uint16_t datalen)
+{
+  const uint8_t *src = data;
+  const uint8_t *target = src + datalen;
+
+  while (((uintptr_t)src & 0x03) !=0 && (src < target))  {
+    rCRC->CRC8_3 = *src++; //Write 8 BIT
+  }
+
+  while (src <= target-4) {
+    rCRC->CRC = *( uint32_t  *)src; //Write 32 BIT
+    src += 4;
+  }
+
+  while (src < target) {
+    rCRC->CRC8_3 = *src++; //Write 8 Bit
+  }
+
+  if (rCRC->CTRL & (1<<CRC_CTRL_TOTR1))
+    return rCRC->CRC16;
+  else
+    return rCRC->CRC16_1;
+}
+
+/** generic function for all 14-Bit CRCs
+ * @param polynom Polynom
+ * @param seed Seed
+ * @param flags Flags
+ * @param data Pointer to Data
+ * @param datalen Length of Data
+ * @return CRC value
+ */
+uint16_t FastCRC14::generic(const uint16_t polynom, const uint16_t seed, const uint32_t flags, const uint8_t *data, const uint16_t datalen)
+{
+
+  rCRC->CTRL  = flags | (1<<CRC_CTRL_TCRC) | (1<<CRC_CTRL_WAS);// 32-Bit Mode, prepare to write seed(25)
+  rCRC->GPOLY = ((uint32_t)polynom) << (32 - 14);                       // set polynom
+  rCRC->CRC   = ((uint32_t)seed << (32 - 14) );                          // this is the seed
+  rCRC->CTRL  = flags | (1<<CRC_CTRL_TCRC);				  	   // Clear WAS Bit - prepare to write data
+
+  return update(data, datalen);
+}
+
+uint16_t FastCRC14::darc_upd(const uint8_t *data, uint16_t len)  {return update(data, len);}
+uint16_t FastCRC14::ft4_upd(const uint8_t *data, uint16_t len)  {return update(data, len);}
+
+
+
 
 // ================= 16-BIT CRC ===================
 
