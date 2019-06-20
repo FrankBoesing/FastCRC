@@ -1,5 +1,5 @@
 /* FastCRC library code is placed under the MIT license
- * Copyright (c) 2014,2015 Frank Bösing
+ * Copyright (c) 2014-2019 Frank Bösing
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -97,6 +97,30 @@ private:
   uint8_t seed;
 #else
   uint8_t update(const uint8_t *data, const uint16_t datalen);
+#endif
+};
+
+// ================= 14-BIT CRC ===================
+
+class FastCRC14
+{
+public:
+#if !CRC_SW //NO Software-implemenation so far
+  FastCRC14();
+  uint16_t ft4(const uint8_t *data, const uint16_t datalen);
+  uint16_t darc(const uint8_t *data, const uint16_t datalen); 
+
+  uint16_t darc_upd(const uint8_t *data, uint16_t len);
+  uint16_t ft4_upd(const uint8_t *data, uint16_t len);  
+#endif  
+#if !CRC_SW
+  uint16_t generic(const uint16_t polyom, const uint16_t seed, const uint32_t flags, const uint8_t *data, const uint16_t datalen); //Not available in non-hw-variant (not T3.x)
+#endif
+private:
+#if CRC_SW
+  uint16_t seed;
+#else
+  uint16_t update(const uint8_t *data, const uint16_t datalen);
 #endif
 };
 
