@@ -86,7 +86,7 @@ public:
   FastCRC8();
   uint8_t smbus(const uint8_t *data, const uint16_t datalen);		// Alias CRC-8
   uint8_t maxim(const uint8_t *data, const uint16_t datalen);		// Equivalent to _crc_ibutton_update() in crc16.h from avr_libc
-  
+
   uint8_t smbus_upd(const uint8_t *data, uint16_t datalen);			// Call for subsequent calculations with previous seed.
   uint8_t maxim_upd(const uint8_t *data, uint16_t datalen);			// Call for subsequent calculations with previous seed.
 #if !CRC_SW
@@ -107,12 +107,16 @@ class FastCRC14
 public:
 #if !CRC_SW //NO Software-implemenation so far
   FastCRC14();
+  uint16_t darc(const uint8_t *data, const uint16_t datalen);
+  uint16_t gsm(const uint8_t *data, const uint16_t datalen);
+  uint16_t eloran(const uint8_t *data, const uint16_t datalen);
   uint16_t ft4(const uint8_t *data, const uint16_t datalen);
-  uint16_t darc(const uint8_t *data, const uint16_t datalen); 
 
   uint16_t darc_upd(const uint8_t *data, uint16_t len);
-  uint16_t ft4_upd(const uint8_t *data, uint16_t len);  
-#endif  
+  uint16_t gsm_upd(const uint8_t *data, uint16_t len);
+  uint16_t eloran_upd(const uint8_t *data, uint16_t len);
+   uint16_t ft4_upd(const uint8_t *data, uint16_t len);
+#endif
 #if !CRC_SW
   uint16_t generic(const uint16_t polyom, const uint16_t seed, const uint32_t flags, const uint8_t *data, const uint16_t datalen); //Not available in non-hw-variant (not T3.x)
 #endif
@@ -136,7 +140,7 @@ public:
   uint16_t modbus(const uint8_t *data, const uint16_t datalen);     // Equivalent to _crc_16_update() in crc16.h from avr_libc
   uint16_t xmodem(const uint8_t *data, const uint16_t datalen);     // Alias ZMODEM, CRC-16/ACORN
   uint16_t x25(const uint8_t *data, const uint16_t datalen);        // Alias CRC-16/IBM-SDLC, CRC-16/ISO-HDLC, CRC-B
-  
+
   uint16_t ccitt_upd(const uint8_t *data, uint16_t len);			// Call for subsequent calculations with previous seed
   uint16_t mcrf4xx_upd(const uint8_t *data, uint16_t len);			// Call for subsequent calculations with previous seed
   uint16_t kermit_upd(const uint8_t *data, uint16_t len);			// Call for subsequent calculations with previous seed
