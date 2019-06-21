@@ -249,6 +249,40 @@ uint16_t FastCRC14::darc(const uint8_t *data,const uint16_t datalen)
   return generic(0x0805, 0x0000, CRC_FLAG_REFLECT, data, datalen);
 }
 
+/** CRC-14/GSM
+ * @param data Pointer to Data
+ * @param datalen Length of Data
+ * @return CRC value
+ */
+uint16_t FastCRC14::gsm(const uint8_t *data,const uint16_t datalen)
+{
+ //  poly=0x202d init=0x0000 refin=false refout=false xorout=0x3fff check=0x30ae residue=0x031e
+  return generic(0x202d, 0x0000, CRC_FLAG_NOREFLECT | CRC_FLAG_XOR, data, datalen);
+}
+
+/** CRC-14/ELORAN
+ * @param data Pointer to Data
+ * @param datalen Length of Data
+ * @return CRC value
+ */
+uint16_t FastCRC14::eloran(const uint8_t *data,const uint16_t datalen)
+{
+ // poly=0x60b1 init=0x0000 refin=false refout=false xorout=0x0000 check=0x38d1
+  return generic(0x60b1, 0x0, CRC_FLAG_NOREFLECT , data, datalen);
+}
+
+/** CRC-14/ft4 : TODO
+ * @param data Pointer to Data
+ * @param datalen Length of Data
+ * @return CRC value
+ */
+/*
+uint16_t FastCRC14::ft4(const uint8_t *data,const uint16_t datalen)
+{
+
+  return generic(, ,  , data, datalen);
+}
+*/
 
 /** Update
  * Call for subsequent calculations with previous seed
@@ -277,7 +311,7 @@ uint16_t FastCRC14::update(const uint8_t *data, const uint16_t datalen)
   if (rCRC->CTRL & (1<<CRC_CTRL_TOTR1))
     return rCRC->CRC16;
   else
-    return rCRC->CRC16_1;
+    return rCRC->CRC >> (32 - 14);
 }
 
 /** generic function for all 14-Bit CRCs
@@ -300,9 +334,9 @@ uint16_t FastCRC14::generic(const uint16_t polynom, const uint16_t seed, const u
 }
 
 uint16_t FastCRC14::darc_upd(const uint8_t *data, uint16_t len)  {return update(data, len);}
-uint16_t FastCRC14::ft4_upd(const uint8_t *data, uint16_t len)  {return update(data, len);}
-
-
+uint16_t FastCRC14::gsm_upd(const uint8_t *data, uint16_t len)  {return update(data, len);}
+uint16_t FastCRC14::eloran_upd(const uint8_t *data, uint16_t len)  {return update(data, len);}
+//uint16_t FastCRC14::ft4(const uint8_t *data, uint16_t len)  {return update(data, len);}
 
 
 // ================= 16-BIT CRC ===================
@@ -335,7 +369,7 @@ uint16_t FastCRC16::ccitt(const uint8_t *data,const uint16_t datalen)
 uint16_t FastCRC16::mcrf4xx(const uint8_t *data,const uint16_t datalen)
 {
  // poly=0x1021 init=0xffff refin=true refout=true xorout=0x0000 check=0x6f91
-  return generic(0x1021, 0XFFFF, CRC_FLAG_REFLECT, data, datalen);
+  return generic(0x1021, 0XFFFF, CRC_FLAG_REFLECT , data, datalen);
 }
 
 /** MODBUS
