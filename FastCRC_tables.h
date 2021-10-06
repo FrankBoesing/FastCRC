@@ -29,13 +29,15 @@
 
 #if !defined(FastCRC_tables)
 #define FastCRC_tables
-#include "inttypes.h"
+#include <inttypes.h>
 
 #if !defined(__SAM3X8E__)
 #if defined(__AVR__ ) || defined(__IMXRT1052__) || defined(__IMXRT1062__) || defined(ARDUINO_ARCH_STM32F1)
 #include <avr/pgmspace.h>
 #else
+#if defined(ARDUINO)
 #include <pgmspace.h>	
+#endif
 #endif
 #endif
 

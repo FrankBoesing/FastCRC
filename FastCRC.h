@@ -46,7 +46,7 @@
 
 #if !defined(FastCRC_h)
 #define FastCRC_h
-#include "inttypes.h"
+#include <inttypes.h>
 
 
 // ================= DEFINES ===================

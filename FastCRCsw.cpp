@@ -30,7 +30,21 @@
 // - Danjel McGougan (CRC-Table-Generator)
 //
 
+#if defined(ARDUINO)
 #include "Arduino.h"
+#else
+#define PROGMEM
+#define pgm_read_byte(addr) (*(const unsigned char *)(addr))
+#define pgm_read_word(addr) ({ \
+	typeof(addr) _addr = (addr); \
+	*(const unsigned short *)(_addr); \
+})
+#define pgm_read_dword(addr) ({ \
+	typeof(addr) _addr = (addr); \
+	*(const unsigned long *)(_addr); \
+})
+#endif
+
 #if !defined(KINETISK)
 
 #include "FastCRC.h"
