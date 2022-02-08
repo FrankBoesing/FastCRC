@@ -40,7 +40,10 @@
 #endif
 #endif
 #endif
-
+#ifndef PROGMEM
+// usefull if you're trying to test the lib in a non arduino env (in cppyy on x64 for exemple)
+#define PROGMEM
+#endif
 const uint8_t crc_table_crc7[256] PROGMEM = {
 	0x00, 0x12, 0x24, 0x36, 0x48, 0x5a, 0x6c, 0x7e,
 	0x90, 0x82, 0xb4, 0xa6, 0xd8, 0xca, 0xfc, 0xee,
