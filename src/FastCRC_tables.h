@@ -36,7 +36,7 @@
 #include <avr/pgmspace.h>
 #else
 #if defined(ARDUINO)
-#include <pgmspace.h>	
+#include <avr/pgmspace.h>	
 #endif
 #endif
 #endif
