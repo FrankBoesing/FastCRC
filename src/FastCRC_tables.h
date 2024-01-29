@@ -32,10 +32,10 @@
 #include <inttypes.h>
 
 #if !defined(__SAM3X8E__)
-#if defined(__AVR__ ) || defined(__IMXRT1062__) || defined(ARDUINO_ARCH_STM32F1) || defined(ARDUINO_ARCH_SAMD)
+#if defined(__AVR__ ) || defined(__IMXRT1062__) || defined(ARDUINO_ARCH_STM32F1) || defined(ARDUINO_ARCH_SAMD) || defined(ARDUINO_UNOR4_MINIMA) || defined(ARDUINO_UNOR4_WIFI) || defined(ARDUINO_NANO_RP2040_CONNECT)
 #include <avr/pgmspace.h>
 #else
-#if defined(ARDUINO)
+#if defined(ARDUINO) || defined(ARDUINO_ARCH_ESP32)
 #include <pgmspace.h>	
 #endif
 #endif
