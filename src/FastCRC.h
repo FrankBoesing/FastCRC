@@ -51,6 +51,10 @@
 #include <Arduino.h>
 #endif
 
+#if defined(ESP32)
+#include <esp32/rom/crc.h>
+#endif
+
 #include <inttypes.h>
 
 
@@ -170,6 +174,9 @@ class FastCRC32
 {
 public:
   FastCRC32();
+
+  uint32_t init_seed(const uint32_t init);
+
   uint32_t crc32(const uint8_t *data, const size_t datalen);		// Alias CRC-32/ADCCP, PKZIP, Ethernet, 802.3
   uint32_t cksum(const uint8_t *data, const size_t datalen);		// Alias CRC-32/POSIX
 
