@@ -418,6 +418,21 @@ uint16_t FastCRC16::x25(const uint8_t *data, const size_t datalen)
  */
 FastCRC32::FastCRC32(){}
 
+uint32_t FastCRC32::crc32(const uint8_t *data, const size_t datalen)
+{
+  // poly=0x04c11db7 init=0xffffffff refin=true refout=true xorout=0xffffffff check=0xcbf43926
+  init_seed(0xffffffff);
+  return crc32_upd(data, datalen);
+}
+
+uint32_t FastCRC32::cksum(const uint8_t *data, const size_t datalen)
+{
+  // width=32 poly=0x04c11db7 init=0x00000000 refin=false refout=false xorout=0xffffffff check=0x765e7680
+  init_seed(0x00);
+  return cksum_upd(data, datalen);
+}
+
+#if !defined(ESP32)
 #define crc_n4d(crc, data, table) crc ^= data; \
 	crc = pgm_read_dword(&table[(crc & 0xff) + 0x300]) ^	\
 	pgm_read_dword(&table[((crc >> 8) & 0xff) + 0x200]) ^	\
@@ -441,6 +456,11 @@ FastCRC32::FastCRC32(){}
 #else
 #define CRC_TABLE_CRC32 crc_table_crc32
 #endif
+
+uint32_t FastCRC32::init_seed(const uint32_t init){
+	seed = init;
+	return seed;
+}
 
 uint32_t FastCRC32::crc32_upd(const uint8_t *data, size_t len)
 {
@@ -478,12 +498,6 @@ uint32_t FastCRC32::crc32_upd(const uint8_t *data, size_t len)
 	return crc;
 }
 
-uint32_t FastCRC32::crc32(const uint8_t *data, const size_t datalen)
-{
-  // poly=0x04c11db7 init=0xffffffff refin=true refout=true xorout=0xffffffff check=0xcbf43926
-  seed = 0xffffffff;
-  return crc32_upd(data, datalen);
-}
 
 /** CKSUM
  * Alias CRC-32/POSIX
@@ -531,11 +545,26 @@ uint32_t FastCRC32::cksum_upd(const uint8_t *data, size_t len)
 	return crc;
 }
 
-uint32_t FastCRC32::cksum(const uint8_t *data, const size_t datalen)
+#else
+
+uint32_t FastCRC32::init_seed(const uint32_t init)
 {
-  // width=32 poly=0x04c11db7 init=0x00000000 refin=false refout=false xorout=0xffffffff check=0x765e7680
-  seed = 0x00;
-  return cksum_upd(data, datalen);
+	seed = ~init;
+	return seed;
 }
+
+uint32_t FastCRC32::crc32_upd(const uint8_t *data, size_t len)
+{
+	seed = crc32_le(seed, data, len);
+	return seed;
+}
+
+uint32_t FastCRC32::cksum_upd(const uint8_t *data, size_t len)
+{
+	seed = crc32_be(seed, data, len);
+	return seed;
+}
+
+#endif
 
 #endif // #if !defined(KINETISK)
